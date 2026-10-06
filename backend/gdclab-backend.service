@@ -1,0 +1,17 @@
+[Unit]
+Description=GDCLab Spring Boot Backend
+After=network.target
+
+[Service]
+User=gutta
+WorkingDirectory=/home/gutta
+ExecStart=/usr/bin/java -jar /home/gutta/gdclab-backend-0.0.1-SNAPSHOT.jar
+Environment=SERVER_PORT=8090
+Environment=DB_URL=jdbc:postgresql://localhost:5432/gdc?currentSchema=gdclab
+Environment=DB_USERNAME=gdc_user
+Environment=DB_PASSWORD=Hello@1234
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,156 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f7f7f7;
+  color: #111827;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 620px;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 18px 42px rgba(17, 24, 39, 0.16);
+}
+
+.login-header {
+  padding: 26px 32px;
+  background: #000000;
+  color: #ffffff;
+
+  h1 {
+    margin: 0;
+    font-size: var(--gdc-text-h1);
+    font-weight: var(--gdc-font-weight-semibold);
+  }
+
+  p {
+    margin: 5px 0 0;
+    font-size: var(--gdc-text-small);
+    font-weight: var(--gdc-font-weight-semibold);
+    color: rgba(255, 255, 255, 0.72);
+  }
+}
+
+.login-body {
+  display: grid;
+  gap: 20px;
+  padding: 34px 40px 28px;
+  background: #f8fafc;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: var(--gdc-text-small);
+    font-weight: var(--gdc-font-weight-semibold);
+    color: #111827;
+  }
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    font-size: var(--gdc-text-body);
+    color: #101828;
+
+    background: #ffffff;
+
+    border: 1px solid #d0d5dd;
+    border-radius: 12px;
+
+    outline: none;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    }
+  }
+}
+
+.error-message {
+  padding: 10px 12px;
+
+  font-size: var(--gdc-text-small);
+  color: #b42318;
+
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  border-radius: 8px;
+}
+
+.login-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 18px 40px;
+  background: #ffffff;
+}
+
+.login-button {
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0 28px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: var(--gdc-text-body-lg);
+  font-weight: var(--gdc-font-weight-semibold);
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+
+  &:hover {
+    background: #000000;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-card {
+    border-radius: 14px;
+  }
+
+  .login-header,
+  .login-body,
+  .login-footer {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .login-header {
+    h1 {
+      font-size: var(--gdc-text-h2);
+    }
+  }
+}

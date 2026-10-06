@@ -1,0 +1,101 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.registration-page {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 32px 34px 42px;
+
+  color: #111827;
+  background: #f7f7f7;
+}
+
+.page-header {
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0;
+
+    font-size: var(--gdc-text-h3);
+    font-weight: var(--gdc-font-weight-semibold);
+    line-height: var(--gdc-line-heading);
+
+    color: #111827;
+  }
+}
+
+.notification-strip {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5000;
+  width: 100vw;
+  max-width: none;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 16px 28px;
+  border-radius: 0;
+  box-shadow: 0 -10px 26px rgba(17, 24, 39, 0.24);
+  color: #ffffff;
+  font-size: var(--gdc-text-body);
+  font-weight: var(--gdc-font-weight-semibold);
+  line-height: var(--gdc-line-compact);
+  text-align: center;
+  white-space: normal;
+
+  &.success {
+    background: #047857;
+  }
+
+  &.error {
+    background: #dc2626;
+  }
+}
+
+.notification-strip-text {
+  display: block;
+  width: 100%;
+  color: #ffffff;
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================
+   Tablet
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .registration-page {
+    padding: 28px 24px 36px;
+  }
+
+}
+
+
+/* =========================
+   Mobile
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .registration-page {
+    padding: 22px 16px 30px;
+  }
+
+  .page-header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: var(--gdc-text-h3);
+    }
+  }
+
+}

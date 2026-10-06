@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.placeholder-page {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+h1 {
+  margin: 0;
+  color: #202020;
+  font-family: var(--gdc-font-heading);
+  font-size: var(--gdc-text-h2);
+  font-weight: var(--gdc-font-weight-semibold);
+}

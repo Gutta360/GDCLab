@@ -1,0 +1,87 @@
+<div class="app-shell">
+
+  <header class="main-header">
+
+    <div class="brand">
+      GDCLab
+    </div>
+
+    <nav class="main-navigation" aria-label="Main navigation">
+
+      <a
+        routerLink="/home"
+        routerLinkActive="active"
+        class="nav-item home-link"
+        aria-label="Home"
+        (click)="closeMenu()"
+      >
+        <svg
+          class="home-icon"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path d="M3 10.8L12 3l9 7.8" />
+          <path d="M5.5 9.5V21h13V9.5" />
+          <path d="M9.5 21v-6.5h5V21" />
+        </svg>
+      </a>
+
+      <div class="nav-dropdown" [class.open]="isMenuOpen('patients')">
+        <button
+          type="button"
+          class="nav-item nav-toggle"
+          [class.active]="isSectionActive(['/patients'])"
+          [attr.aria-expanded]="isMenuOpen('patients')"
+          aria-controls="patients-menu"
+          (click)="toggleMenu('patients')"
+        >
+          Patient
+        </button>
+
+        <div id="patients-menu" class="dropdown-menu">
+          <a routerLink="/patients/registration" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">
+            Registration
+          </a>
+          <a routerLink="/patients/details" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">
+            Patient Details
+          </a>
+          <a routerLink="/patients/summary" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">
+            Patient Summary
+          </a>
+        </div>
+      </div>
+
+      <a routerLink="/tab-2" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
+        Tab 2
+      </a>
+
+      <a routerLink="/tab-3" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
+        Tab 3
+      </a>
+
+      <a routerLink="/tab-4" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
+        Tab 4
+      </a>
+
+      <a routerLink="/tab-5" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
+        Tab 5
+      </a>
+
+    </nav>
+
+    <button
+      type="button"
+      class="logout-button"
+      aria-label="Logout"
+      (click)="logout()"
+    >
+      ⏻
+    </button>
+
+  </header>
+
+  <main class="application-content">
+    <router-outlet />
+  </main>
+
+</div>

@@ -1,0 +1,101 @@
+<section class="patient-summary-page">
+  <header class="summary-header">
+    <h1>Patient Summary</h1>
+
+    <div class="summary-stats" aria-label="Patient counts">
+      <span>Total {{ patients.length }}</span>
+      <span>Active {{ activeCount }}</span>
+      <span>Inactive {{ inactiveCount }}</span>
+    </div>
+  </header>
+
+  <section class="summary-layout">
+    <aside class="patient-list" aria-label="Patients">
+      <label class="search-field">
+        <span>Search patients</span>
+        <input
+          type="search"
+          [(ngModel)]="searchTerm"
+          placeholder="Name, ID, or mobile"
+        />
+      </label>
+
+      @if (loading) {
+        <p class="state-message">Loading patients...</p>
+      } @else if (errorMessage) {
+        <p class="state-message error">{{ errorMessage }}</p>
+      } @else if (!filteredPatients.length) {
+        <p class="state-message">No patients found.</p>
+      }
+
+      <div class="patient-options">
+        @for (patient of filteredPatients; track patient.patientId) {
+          <button
+            type="button"
+            class="patient-option"
+            [class.active]="selectedPatient?.patientId === patient.patientId"
+            (click)="selectPatient(patient)"
+          >
+            <strong>{{ patient.fullName }}</strong>
+            <span>{{ patient.patientId }} · {{ patient.mobile }}</span>
+          </button>
+        }
+      </div>
+    </aside>
+
+    <article class="summary-card">
+      @if (selectedPatient) {
+        <header>
+          <div>
+            <strong>{{ selectedPatient.fullName }}</strong>
+            <span>{{ selectedPatient.patientId }}</span>
+          </div>
+          <span class="status" [class.inactive]="!selectedPatient.active">
+            {{ selectedPatient.active ? 'Active' : 'Inactive' }}
+          </span>
+        </header>
+
+        <dl class="detail-grid">
+          <div>
+            <dt>Gender</dt>
+            <dd>{{ selectedPatient.gender }}</dd>
+          </div>
+          <div>
+            <dt>Age</dt>
+            <dd>{{ selectedPatient.age }}</dd>
+          </div>
+          <div>
+            <dt>Mobile</dt>
+            <dd>{{ selectedPatient.mobile }}</dd>
+          </div>
+          <div>
+            <dt>Registration Date</dt>
+            <dd>{{ formatDate(selectedPatient.registrationDate) }}</dd>
+          </div>
+          <div>
+            <dt>Referred By</dt>
+            <dd>{{ selectedPatient.referredBy }}</dd>
+          </div>
+          <div>
+            <dt>Doctor Name</dt>
+            <dd>{{ selectedPatient.doctorName || '-' }}</dd>
+          </div>
+          <div>
+            <dt>Consultation Fee</dt>
+            <dd>₹{{ selectedPatient.consultationFee | number:'1.2-2' }}</dd>
+          </div>
+          <div>
+            <dt>Last Updated</dt>
+            <dd>{{ formatDate(selectedPatient.updatedAt) }}</dd>
+          </div>
+          <div class="wide">
+            <dt>Address</dt>
+            <dd>{{ selectedPatient.address }}</dd>
+          </div>
+        </dl>
+      } @else {
+        <p class="state-message">Select a patient to view summary.</p>
+      }
+    </article>
+  </section>
+</section>

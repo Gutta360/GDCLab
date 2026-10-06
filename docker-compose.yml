@@ -1,0 +1,12 @@
+services:
+  gdclab-backend:
+    build:
+      context: ./backend
+    container_name: gdclab-backend
+    environment:
+      SERVER_PORT: 8090
+      DB_URL: jdbc:postgresql://host.docker.internal:5432/gdc?currentSchema=gdclab
+      DB_USERNAME: gdc_user
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8090:8090"

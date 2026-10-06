@@ -1,0 +1,111 @@
+:root {
+  --gdc-font-heading: 'Raleway', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --gdc-font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --gdc-font-weight-regular: 400;
+  --gdc-font-weight-medium: 500;
+  --gdc-font-weight-semibold: 600;
+  --gdc-font-weight-bold: 700;
+
+  --gdc-text-display: 48px;
+  --gdc-text-h1: 36px;
+  --gdc-text-h2: 30px;
+  --gdc-text-h3: 24px;
+  --gdc-text-h4: 20px;
+  --gdc-text-h5: 18px;
+  --gdc-text-body-lg: 16px;
+  --gdc-text-body: 15px;
+  --gdc-text-small: 14px;
+  --gdc-text-caption: 13px;
+  --gdc-text-button: 14px;
+
+  --gdc-line-display: 1.12;
+  --gdc-line-heading: 1.2;
+  --gdc-line-body: 1.5;
+  --gdc-line-compact: 1.35;
+  --gdc-line-icon: 1;
+  --gdc-letter-spacing: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--gdc-font-body);
+  font-size: var(--gdc-text-body);
+  font-weight: var(--gdc-font-weight-regular);
+  line-height: var(--gdc-line-body);
+  letter-spacing: var(--gdc-letter-spacing);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: var(--gdc-font-body);
+  font-size: var(--gdc-text-body);
+  font-weight: var(--gdc-font-weight-regular);
+  line-height: var(--gdc-line-body);
+  letter-spacing: var(--gdc-letter-spacing);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--gdc-font-heading);
+  line-height: var(--gdc-line-heading);
+  letter-spacing: var(--gdc-letter-spacing);
+}
+
+h1 {
+  font-size: var(--gdc-text-h1);
+  font-weight: var(--gdc-font-weight-bold);
+}
+
+h2 {
+  font-size: var(--gdc-text-h2);
+  font-weight: var(--gdc-font-weight-semibold);
+}
+
+h3 {
+  font-size: var(--gdc-text-h3);
+  font-weight: var(--gdc-font-weight-semibold);
+}
+
+h4 {
+  font-size: var(--gdc-text-h4);
+  font-weight: var(--gdc-font-weight-semibold);
+}
+
+h5,
+h6 {
+  font-size: var(--gdc-text-h5);
+  font-weight: var(--gdc-font-weight-semibold);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--gdc-font-body);
+  font-size: var(--gdc-text-body);
+  font-weight: var(--gdc-font-weight-regular);
+  line-height: var(--gdc-line-body);
+  letter-spacing: var(--gdc-letter-spacing);
+}
+
+button,
+[role='button'] {
+  font-size: var(--gdc-text-button);
+  font-weight: var(--gdc-font-weight-semibold);
+}
+
+small {
+  font-size: var(--gdc-text-caption);
+  line-height: var(--gdc-line-compact);
+}
