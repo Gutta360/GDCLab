@@ -1,0 +1,35 @@
+:host { display: block; }
+.bill-page { max-width: 1000px; margin: 0 auto; }
+.bill-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 16px; }
+.printable-bill { padding: 28px; border: 1px solid #cfd5dd; background: #fff; color: #111; }
+.bill-header { display: flex; justify-content: space-between; gap: 24px; padding-bottom: 16px; border-bottom: 3px double #111; }
+.bill-header h1 { margin: 0; font-size: 26px; text-transform: uppercase; }
+.bill-header p { margin: 3px 0; font-size: 13px; }
+.bill-mark { align-self: center; padding: 8px 12px; border: 1px solid #111; font-size: 13px; font-weight: 700; }
+.bill-identifiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding: 14px 0; border-bottom: 1px solid #aaa; }
+.bill-identifiers span, .bill-patient span { display: block; font-size: 11px; color: #555; text-transform: uppercase; }
+.bill-identifiers strong, .bill-patient strong { display: block; margin-top: 2px; font-size: 13px; }
+.bill-patient { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px 20px; padding: 14px 0; }
+.bill-tests { width: 100%; border-collapse: collapse; }
+.bill-tests th, .bill-tests td { padding: 9px 8px; border: 1px solid #999; font-size: 13px; text-align: left; }
+.bill-tests th { background: #eee; }
+.bill-tests .number { text-align: right; }
+.bill-bottom { display: grid; grid-template-columns: 1fr 360px; gap: 28px; margin-top: 18px; }
+.barcode-area { display: flex; align-items: flex-end; justify-content: center; min-height: 100px; overflow: hidden; }
+.barcode-area svg { max-width: 100%; }
+.bill-totals { border-top: 1px solid #111; }
+.bill-totals div { display: flex; justify-content: space-between; padding: 7px 4px; border-bottom: 1px solid #ccc; }
+.bill-totals .grand { font-size: 15px; border-bottom: 2px solid #111; }
+.bill-totals .due { font-size: 15px; }
+.bill-footer { display: flex; justify-content: space-between; margin-top: 46px; padding-top: 12px; border-top: 1px solid #aaa; font-size: 12px; }
+.bill-footer span, .bill-footer strong { display: block; }
+.signature { min-width: 180px; padding-top: 28px; border-top: 1px solid #111; text-align: center; }
+@media (max-width: 700px) { .printable-bill { padding: 16px; } .bill-header, .bill-bottom { grid-template-columns: 1fr; flex-direction: column; } .bill-patient { grid-template-columns: 1fr 1fr; } }
+@media print {
+  .screen-only { display: none !important; }
+  .bill-page { max-width: none; margin: 0; }
+  .printable-bill { padding: 0; border: 0; }
+  .bill-tests { break-inside: auto; }
+  .bill-tests tr { break-inside: avoid; }
+  .bill-bottom { break-inside: avoid; }
+}

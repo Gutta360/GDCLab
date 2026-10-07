@@ -8,11 +8,7 @@ import {
   Observable
 } from 'rxjs';
 
-import {
-  PatientRequest,
-  PatientResponse,
-  PatientSummary
-} from '../models/patient.model';
+import { PatientResponse, PatientSummary } from '../models/patient.model';
 
 
 @Injectable({
@@ -42,18 +38,6 @@ export class PatientService {
   ) {}
 
 
-  /*
-   * GET /api/v1/patients
-   */
-  getAllPatients():
-    Observable<PatientResponse[]> {
-
-    return this.http.get<PatientResponse[]>(
-      this.apiUrl
-    );
-  }
-
-
   searchActivePatients(
     query: string
   ): Observable<PatientSummary[]> {
@@ -80,50 +64,4 @@ export class PatientService {
       `${this.apiUrl}/${patientId}`
     );
   }
-
-
-  /*
-   * POST /api/v1/patients
-   */
-  createPatient(
-    request: PatientRequest
-  ): Observable<PatientResponse> {
-
-    return this.http.post<PatientResponse>(
-      this.apiUrl,
-      request
-    );
-  }
-
-
-  /*
-   * PUT /api/v1/patients/{patientId}
-   */
-  updatePatient(
-    patientId: string,
-    request: PatientRequest
-  ): Observable<PatientResponse> {
-
-    return this.http.put<PatientResponse>(
-      `${this.apiUrl}/${patientId}`,
-      request
-    );
-  }
-
-
-  /*
-   * DELETE /api/v1/patients/{patientId}
-   *
-   * We won't use this yet.
-   * Keeping it here completes the Patient API service.
-   */
-  deletePatient(
-    patientId: string
-  ): Observable<void> {
-
-    return this.http.delete<void>(
-      `${this.apiUrl}/${patientId}`
-    );
-  }
-
 }

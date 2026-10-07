@@ -24,18 +24,18 @@ describe('AppShell', () => {
   });
 
   it('should switch from one open menu to another', () => {
-    component.toggleMenu('patients');
-    expect(component.isMenuOpen('patients')).toBe(true);
+    component.toggleMenu('registrations');
+    expect(component.isMenuOpen('registrations')).toBe(true);
 
-    component.toggleMenu('tab-2');
-    expect(component.isMenuOpen('patients')).toBe(false);
-    expect(component.isMenuOpen('tab-2')).toBe(true);
+    component.toggleMenu('tests');
+    expect(component.isMenuOpen('registrations')).toBe(false);
+    expect(component.isMenuOpen('tests')).toBe(true);
   });
 
   it('should close an open menu when toggled again', () => {
-    component.toggleMenu('patients');
-    component.toggleMenu('patients');
+    component.toggleMenu('payments');
+    component.toggleMenu('payments');
 
-    expect(component.isMenuOpen('patients')).toBe(false);
+    expect(component.isMenuOpen('payments')).toBe(false);
   });
 });

@@ -1,0 +1,147 @@
+<section class="ops-page registration-workspace">
+  <header class="ops-page-header">
+    <div>
+      <h1>New Registration</h1>
+      <p>Diagnostic registration, test selection and initial billing</p>
+    </div>
+    @if (created) {
+      <div class="ops-actions">
+        <a class="ops-button secondary" [routerLink]="['/registrations', created.registrationNo]">View</a>
+        <a class="ops-button" [routerLink]="['/registrations', created.registrationNo, 'bill']">Print Bill</a>
+      </div>
+    }
+  </header>
+
+  @if (loadingMasters) {
+    <div class="ops-loading">Loading registration masters...</div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save(false)">
+      <section class="ops-section">
+        <div class="ops-section-title"><h2>Registration</h2></div>
+        <div class="ops-grid">
+          <div class="ops-field"><label>Registration No</label><input readonly [value]="created?.registrationNo || 'Auto-generated'" /></div>
+          <div class="ops-field"><label>Bill No</label><input readonly [value]="created?.billNo || 'Auto-generated'" /></div>
+          <div class="ops-field"><label for="registrationDatetime">Registration Date</label><input id="registrationDatetime" type="datetime-local" formControlName="registrationDatetime" /></div>
+          <div class="ops-field">
+            <label for="branchId">Branch *</label>
+            <select id="branchId" formControlName="branchId">
+              <option value="">Select branch</option>
+              @for (branch of branches; track branch.id) { <option [value]="branch.id">{{ branch.branchCode }} - {{ branch.branchName }}</option> }
+            </select>
+            @if (form.controls.branchId.touched && form.controls.branchId.invalid) { <span class="ops-error">Branch is required.</span> }
+          </div>
+        </div>
+      </section>
+
+      <section class="ops-section">
+        <div class="ops-section-title">
+          <h2>Patient</h2>
+          <div class="ops-segmented" aria-label="Patient mode">
+            <button type="button" [class.active]="patientMode === 'new'" (click)="useNewPatient()">New Patient</button>
+            <button type="button" [class.active]="patientMode === 'existing'" [disabled]="!selectedPatient">Existing Patient</button>
+          </div>
+        </div>
+
+        <div class="patient-search-block">
+          <label class="ops-label" for="patientSearch">Search existing patient</label>
+          <div class="ops-inline-search">
+            <input id="patientSearch" class="ops-input" [(ngModel)]="patientQuery" [ngModelOptions]="{standalone: true}" placeholder="Patient ID, name or mobile" (keyup.enter)="searchPatients()" />
+            <button type="button" class="ops-button secondary" (click)="searchPatients()" [disabled]="searchingPatients">Search</button>
+          </div>
+          @if (patientResults.length) {
+            <div class="ops-search-results">
+              @for (patient of patientResults; track patient.patientId) {
+                <button type="button" class="ops-search-option" (click)="selectPatient(patient)">
+                  <span><strong>{{ patient.patientId }}</strong> &nbsp; {{ patient.fullName }}</span>
+                  <span>{{ patient.mobile }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        @if (selectedPatient) {
+          <div class="selected-patient-banner">
+            <strong>{{ selectedPatient.patientId }} - {{ selectedPatient.fullName }}</strong>
+            <span>Existing patient selected for a new diagnostic visit.</span>
+          </div>
+        }
+
+        <div class="ops-grid patient-grid">
+          <div class="ops-field"><label for="title">Title</label><select id="title" formControlName="title" [attr.disabled]="patientMode === 'existing' ? true : null"><option value="">Select</option><option>Mr</option><option>Mrs</option><option>Ms</option><option>Master</option><option>Baby</option></select></div>
+          <div class="ops-field"><label for="firstName">First Name *</label><input id="firstName" formControlName="firstName" [readonly]="patientMode === 'existing'" />@if (form.controls.firstName.touched && form.controls.firstName.invalid) { <span class="ops-error">Enter a valid first name.</span> }</div>
+          <div class="ops-field"><label for="lastName">Last Name</label><input id="lastName" formControlName="lastName" [readonly]="patientMode === 'existing'" /></div>
+          <div class="ops-field"><label for="mobile">Mobile *</label><input id="mobile" formControlName="mobile" inputmode="numeric" maxlength="10" [readonly]="patientMode === 'existing'" (input)="normalizeDigits('mobile', 10)" />@if (form.controls.mobile.touched && form.controls.mobile.invalid) { <span class="ops-error">Enter exactly 10 digits.</span> }</div>
+          <div class="ops-field"><label for="aadhaarNo">Aadhaar No</label><input id="aadhaarNo" formControlName="aadhaarNo" inputmode="numeric" maxlength="12" [readonly]="patientMode === 'existing'" [placeholder]="selectedPatient?.aadhaarMasked || 'Optional, 12 digits'" (input)="normalizeDigits('aadhaarNo', 12)" />@if (form.controls.aadhaarNo.touched && form.controls.aadhaarNo.invalid) { <span class="ops-error">Aadhaar must contain exactly 12 digits.</span> }</div>
+          <div class="ops-field"><label for="gender">Gender *</label><select id="gender" formControlName="gender" [attr.disabled]="patientMode === 'existing' ? true : null"><option value="">Select</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option></select></div>
+          <div class="ops-field"><label for="email">Email</label><input id="email" type="email" formControlName="email" [readonly]="patientMode === 'existing'" />@if (form.controls.email.touched && form.controls.email.invalid) { <span class="ops-error">Enter a valid email.</span> }</div>
+          <div class="ops-field"><label for="dateOfBirth">Date of Birth</label><input id="dateOfBirth" type="date" formControlName="dateOfBirth" [max]="today" [readonly]="patientMode === 'existing'" (change)="dobChanged()" /></div>
+          <div class="ops-field"><label for="age">Age *</label><input id="age" type="number" formControlName="age" min="0" max="120" [readonly]="patientMode === 'existing' || !!form.value.dateOfBirth" />@if (form.controls.age.touched && form.controls.age.invalid) { <span class="ops-error">Age must be 0 to 120.</span> }</div>
+          <div class="ops-field wide"><label for="address">Address</label><textarea id="address" formControlName="address" [readonly]="patientMode === 'existing'"></textarea></div>
+        </div>
+      </section>
+
+      <section class="ops-section">
+        <div class="ops-section-title"><h2>Referral</h2></div>
+        <div class="ops-grid cols-2">
+          <div class="ops-field"><label for="doctor">Ref by Doctor</label><select id="doctor" formControlName="referringDoctorId"><option value="">Self / None</option>@for (doctor of doctors; track doctor.id) { <option [value]="doctor.id">{{ doctor.name }}{{ doctor.qualification ? ' - ' + doctor.qualification : '' }}</option> }</select></div>
+          <div class="ops-field"><label for="lab">Ref by Lab</label><select id="lab" formControlName="referringLabId"><option value="">None</option>@for (lab of labs; track lab.id) { <option [value]="lab.id">{{ lab.name }}</option> }</select></div>
+        </div>
+      </section>
+
+      <section class="ops-section">
+        <div class="ops-section-title"><h2>Test Selection</h2><span class="ops-help">{{ selectedTests.length }} selected</span></div>
+        <div class="test-picker">
+          <div class="ops-field"><label for="testQuery">Test ID or Name</label><input id="testQuery" [(ngModel)]="testQuery" [ngModelOptions]="{standalone: true}" placeholder="Search tests" /></div>
+          <div class="ops-field"><label for="categoryFilter">Category</label><select id="categoryFilter" [(ngModel)]="categoryFilter" [ngModelOptions]="{standalone: true}"><option value="">All categories</option>@for (category of categories; track category.code) { <option [value]="category.code">{{ category.name }}</option> }</select></div>
+        </div>
+        <div class="test-options">
+          @for (test of filteredTests.slice(0, 12); track test.testCode) {
+            <button type="button" class="test-option" (click)="addTest(test)">
+              <span><strong>{{ test.testCode }}</strong> - {{ test.testName }}</span>
+              <span>{{ test.categoryName }} &nbsp; <strong>{{ test.currentPrice | currency:'INR':'symbol':'1.2-2' }}</strong></span>
+            </button>
+          } @empty { <div class="ops-empty compact">No available tests match this search.</div> }
+        </div>
+
+        <div class="ops-table-wrap selected-tests-table">
+          <table class="ops-table">
+            <thead><tr><th>S.No</th><th>Test ID</th><th>Test Name</th><th>Category</th><th class="number">Amount</th><th>Discount %</th><th class="number">Discount</th><th class="number">Total</th><th></th></tr></thead>
+            <tbody>
+              @for (line of selectedTests; track line.master.testCode; let index = $index) {
+                <tr><td>{{ index + 1 }}</td><td>{{ line.master.testCode }}</td><td>{{ line.master.testName }}</td><td>{{ line.master.categoryName }}</td><td class="number">{{ line.master.currentPrice | currency:'INR':'symbol':'1.2-2' }}</td><td><input class="discount-input" type="number" min="0" max="100" step="0.01" [value]="line.discountPercentage" (input)="discountChanged(line, $event)" /></td><td class="number">{{ lineDiscount(line) | currency:'INR':'symbol':'1.2-2' }}</td><td class="number"><strong>{{ lineTotal(line) | currency:'INR':'symbol':'1.2-2' }}</strong></td><td><button type="button" class="icon-remove" title="Remove test" (click)="removeTest(line.master.testCode)">×</button></td></tr>
+              } @empty { <tr><td colspan="9" class="ops-empty">No tests selected.</td></tr> }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="ops-section billing-section">
+        <div class="ops-section-title"><h2>Billing & Initial Payment</h2></div>
+        <div class="billing-layout">
+          <div class="ops-grid cols-2">
+            <div class="ops-field"><label for="billDiscount">Bill Discount %</label><input id="billDiscount" type="number" min="0" max="100" step="0.01" formControlName="billDiscountPercentage" /></div>
+            <div class="ops-field"><label for="initialPayment">Initial Payment</label><input id="initialPayment" type="number" min="0" step="0.01" formControlName="initialPaymentAmount" /></div>
+            <div class="ops-field"><label for="paymentMode">Payment Mode</label><select id="paymentMode" formControlName="paymentMode">@for (mode of paymentModes; track mode) { <option [value]="mode">{{ mode }}</option> }</select></div>
+            <div class="ops-field"><label for="referenceNo">Reference No</label><input id="referenceNo" formControlName="referenceNo" /></div>
+            <div class="ops-field wide"><label for="remarks">Remarks</label><textarea id="remarks" formControlName="remarks"></textarea></div>
+          </div>
+          <div class="bill-preview">
+            <div><span>Bill Amount</span><strong>{{ (created?.billAmount ?? billAmount) | currency:'INR':'symbol':'1.2-2' }}</strong></div>
+            <div><span>Bill Discount</span><strong>{{ (created?.discountAmount ?? billDiscountAmount) | currency:'INR':'symbol':'1.2-2' }}</strong></div>
+            <div class="final"><span>Final Bill Amount</span><strong>{{ (created?.finalBillAmount ?? finalBillAmount) | currency:'INR':'symbol':'1.2-2' }}</strong></div>
+            <div><span>Paid Amount</span><strong>{{ (created?.paidAmount ?? previewPaidAmount) | currency:'INR':'symbol':'1.2-2' }}</strong></div>
+            <div class="due"><span>Due Amount</span><strong>{{ (created?.dueAmount ?? previewDueAmount) | currency:'INR':'symbol':'1.2-2' }}</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="ops-actions page-actions">
+        <button type="submit" class="ops-button secondary" [disabled]="submitting">{{ submitting ? 'Saving...' : 'Save Registration' }}</button>
+        <button type="button" class="ops-button" [disabled]="submitting" (click)="save(true)">Save & Print</button>
+      </div>
+    </form>
+  }
+</section>
+
+@if (notification) { <div class="ops-notification" [class.error]="notificationError" role="alert">{{ notification }}</div> }

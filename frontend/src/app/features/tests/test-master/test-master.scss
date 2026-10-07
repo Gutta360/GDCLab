@@ -1,0 +1,7 @@
+:host { display: block; }
+.category-counts { display: flex; gap: 1px; overflow: hidden; border: 1px solid #dfe3e8; border-radius: 6px; background: #dfe3e8; }
+.category-counts div { min-width: 180px; flex: 1; display: flex; justify-content: space-between; padding: 13px 16px; background: #fff; }
+.category-counts span { color: #667085; }
+.category-counts strong { font-size: 18px; }
+.result-count { margin: 4px 0 10px; color: #667085; font-size: 14px; }
+@media (max-width: 650px) { .category-counts { flex-direction: column; } }

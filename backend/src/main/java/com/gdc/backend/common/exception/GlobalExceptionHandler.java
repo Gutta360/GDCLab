@@ -1,6 +1,5 @@
 package com.gdc.backend.common.exception;
 
-import com.gdc.backend.patient.exception.DuplicatePatientException;
 import com.gdc.backend.patient.exception.PatientNotFoundException;
 import com.gdc.backend.patient.exception.PatientValidationException;
 import jakarta.persistence.LockTimeoutException;
@@ -8,6 +7,8 @@ import jakarta.persistence.PessimisticLockException;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -43,6 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             PatientValidationException.class
+            , BusinessValidationException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException exception) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), Map.of());
@@ -55,13 +57,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             PatientNotFoundException.class
+            , ResourceNotFoundException.class
     })
     public ResponseEntity<ApiErrorResponse> handleNotFound(RuntimeException exception) {
         return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), Map.of());
     }
 
     @ExceptionHandler({
-            DuplicatePatientException.class
+            BusinessConflictException.class
     })
     public ResponseEntity<ApiErrorResponse> handleConflict(RuntimeException exception) {
         return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), Map.of());
@@ -73,11 +76,21 @@ public class GlobalExceptionHandler {
             PessimisticLockingFailureException.class,
             PessimisticLockException.class,
             LockTimeoutException.class
+            , ObjectOptimisticLockingFailureException.class
     })
     public ResponseEntity<ApiErrorResponse> handleConcurrency(RuntimeException exception) {
         return buildResponse(
                 HttpStatus.CONFLICT,
                 "The request could not be completed because the data changed. Please refresh and try again.",
+                Map.of()
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrity(DataIntegrityViolationException exception) {
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                "The request conflicts with existing data or an integrity rule",
                 Map.of()
         );
     }

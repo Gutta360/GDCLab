@@ -2,6 +2,7 @@ package com.gdc.backend.patient.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 
 import com.gdc.backend.patient.entity.Gender;
 import com.gdc.backend.patient.entity.ReferredBy;
@@ -9,6 +10,8 @@ import com.gdc.backend.patient.entity.ReferredBy;
 public record PatientResponse(
 
         String patientId,
+
+        String title,
 
         String firstName,
 
@@ -23,6 +26,12 @@ public record PatientResponse(
         String mobile,
 
         String address,
+
+        String aadhaarMasked,
+
+        String email,
+
+        LocalDate dateOfBirth,
 
         ReferredBy referredBy,
 

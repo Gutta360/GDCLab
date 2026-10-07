@@ -23,7 +23,12 @@ spring.flyway.schemas=gdclab
 spring.flyway.default-schema=gdclab
 ```
 
-Flyway creates and uses only the `gdclab` schema. The only migration is `V1__create_patient_module.sql`.
+Flyway creates and uses only the `gdclab` schema. The immutable
+`V1__create_patient_module.sql` defines Patient master data;
+`V2__create_diagnostic_registration_module.sql` adds the diagnostic database
+foundation. See [Phase 2](database/PHASE2.md) for the schema, constraints,
+all 41 seeded tests and migration verification. Diagnostic APIs and screens
+will be integrated in later approved phases.
 
 ## Frontend
 

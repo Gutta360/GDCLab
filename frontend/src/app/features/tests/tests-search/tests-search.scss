@@ -1,0 +1,7 @@
+:host { display: block; }
+.report-mode { margin-bottom: 12px; }
+.date-presets { max-width: 100%; margin-bottom: 16px; overflow-x: auto; }
+.filter-actions { margin-top: 16px; }
+.test-report-table { min-width: 1550px; }
+.status-select { min-height: 34px; border: 1px solid #cfd5dd; border-radius: 4px; background: #fff; }
+.ops-summary { grid-template-columns: repeat(4, minmax(130px, 1fr)); }

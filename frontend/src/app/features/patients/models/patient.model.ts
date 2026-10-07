@@ -13,43 +13,13 @@ export type ReferredBy =
 
 
 /*
- * Matches:
- * PatientCreateRequest
- * PatientUpdateRequest
- *
- * Both backend DTOs currently have
- * the same request structure.
- */
-export interface PatientRequest {
-
-  firstName: string;
-
-  lastName: string | null;
-
-  gender: Gender;
-
-  age: number;
-
-  mobile: string;
-
-  address: string;
-
-  referredBy: ReferredBy;
-
-  doctorName: string | null;
-
-  consultationFee: number;
-
-  registrationDate: string;
-}
-
-
-/*
  * Matches backend PatientResponse.
  */
 export interface PatientResponse {
 
   patientId: string;
+
+  title: string | null;
 
   firstName: string;
 
@@ -63,7 +33,13 @@ export interface PatientResponse {
 
   mobile: string;
 
-  address: string;
+  address: string | null;
+
+  aadhaarMasked: string | null;
+
+  email: string | null;
+
+  dateOfBirth: string | null;
 
   referredBy: ReferredBy;
 

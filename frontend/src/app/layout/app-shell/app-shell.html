@@ -26,46 +26,28 @@
         </svg>
       </a>
 
-      <div class="nav-dropdown" [class.open]="isMenuOpen('patients')">
-        <button
-          type="button"
-          class="nav-item nav-toggle"
-          [class.active]="isSectionActive(['/patients'])"
-          [attr.aria-expanded]="isMenuOpen('patients')"
-          aria-controls="patients-menu"
-          (click)="toggleMenu('patients')"
-        >
-          Patient
-        </button>
-
-        <div id="patients-menu" class="dropdown-menu">
-          <a routerLink="/patients/registration" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">
-            Registration
-          </a>
-          <a routerLink="/patients/details" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">
-            Patient Details
-          </a>
-          <a routerLink="/patients/summary" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">
-            Patient Summary
-          </a>
+      <div class="nav-dropdown" [class.open]="isMenuOpen('registrations')">
+        <button type="button" class="nav-item nav-toggle" [class.active]="isSectionActive(['/registrations'])" [attr.aria-expanded]="isMenuOpen('registrations')" (click)="toggleMenu('registrations')">Registration</button>
+        <div class="dropdown-menu">
+          <a routerLink="/registrations/new" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">New Registration</a>
+          <a routerLink="/registrations/search" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">Registration Search</a>
         </div>
       </div>
 
-      <a routerLink="/tab-2" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
-        Tab 2
-      </a>
+      <div class="nav-dropdown" [class.open]="isMenuOpen('tests')">
+        <button type="button" class="nav-item nav-toggle" [class.active]="isSectionActive(['/tests'])" [attr.aria-expanded]="isMenuOpen('tests')" (click)="toggleMenu('tests')">Tests</button>
+        <div class="dropdown-menu">
+          <a routerLink="/tests/search" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">Tests Search</a>
+          <a routerLink="/tests/master" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">Test Master</a>
+        </div>
+      </div>
 
-      <a routerLink="/tab-3" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
-        Tab 3
-      </a>
-
-      <a routerLink="/tab-4" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
-        Tab 4
-      </a>
-
-      <a routerLink="/tab-5" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
-        Tab 5
-      </a>
+      <div class="nav-dropdown" [class.open]="isMenuOpen('payments')">
+        <button type="button" class="nav-item nav-toggle" [class.active]="isSectionActive(['/payments'])" [attr.aria-expanded]="isMenuOpen('payments')" (click)="toggleMenu('payments')">Payments</button>
+        <div class="dropdown-menu">
+          <a routerLink="/payments/search" routerLinkActive="active" class="dropdown-item" (click)="closeMenu()">Payments Search</a>
+        </div>
+      </div>
 
     </nav>
 

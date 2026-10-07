@@ -2,10 +2,6 @@ import { Routes } from '@angular/router';
 
 import { Login } from './features/auth/login/login';
 import { AppShell } from './layout/app-shell/app-shell';
-import { PatientRegistration } from './features/patients/registration/patient-registration/patient-registration';
-import { PatientDetails } from './features/patients/details/patient-details/patient-details';
-import { PatientEdit } from './features/patients/edit/patient-edit/patient-edit';
-import { PatientSummary } from './features/patients/summary/patient-summary/patient-summary';
 import { Placeholder } from './features/placeholder/placeholder';
 
 export const routes: Routes = [
@@ -14,7 +10,7 @@ export const routes: Routes = [
 
     path: '',
 
-    redirectTo: '/login',
+    redirectTo: 'login',
 
     pathMatch: 'full'
 
@@ -46,9 +42,9 @@ export const routes: Routes = [
 
       {
 
-        path: 'patients',
+        path: 'registrations',
 
-        redirectTo: 'patients/registration',
+        redirectTo: 'registrations/new',
 
         pathMatch: 'full'
 
@@ -56,65 +52,64 @@ export const routes: Routes = [
 
       {
 
-        path: 'patients/registration',
+        path: 'registrations/new',
 
-        component: PatientRegistration
-
-      },
-
-      {
-
-        path: 'patients/details',
-
-        component: PatientDetails
+        loadComponent: () => import('./features/registrations/new-registration/new-registration')
+          .then(module => module.NewRegistration)
 
       },
 
       {
 
-        path: 'patients/summary',
+        path: 'registrations/search',
 
-        component: PatientSummary
-
-      },
-
-      {
-
-        path: 'patients/:patientId/edit',
-
-        component: PatientEdit
+        loadComponent: () => import('./features/registrations/registration-search/registration-search')
+          .then(module => module.RegistrationSearch)
 
       },
 
       {
 
-        path: 'tab-2',
+        path: 'registrations/:registrationNo/bill',
 
-        component: Placeholder
-
-      },
-
-      {
-
-        path: 'tab-3',
-
-        component: Placeholder
+        loadComponent: () => import('./features/registrations/bill/bill')
+          .then(module => module.Bill)
 
       },
 
       {
 
-        path: 'tab-4',
+        path: 'registrations/:registrationNo',
 
-        component: Placeholder
+        loadComponent: () => import('./features/registrations/registration-details/registration-details')
+          .then(module => module.RegistrationDetails)
 
       },
 
       {
 
-        path: 'tab-5',
+        path: 'tests/search',
 
-        component: Placeholder
+        loadComponent: () => import('./features/tests/tests-search/tests-search')
+          .then(module => module.TestsSearch)
+
+      },
+
+      {
+
+        path: 'tests/master',
+
+        loadComponent: () => import('./features/tests/test-master/test-master')
+          .then(module => module.TestMaster)
+
+      },
+
+      {
+
+        path: 'payments/search',
+
+        loadComponent: () => import('./features/payments/payments-search/payments-search')
+          .then(module => module.PaymentsSearch)
 
       }
 

@@ -1,0 +1,37 @@
+<section class="ops-page">
+  <header class="ops-page-header"><div><h1>Registration Search</h1><p>Find visits, balances and bills</p></div><a class="ops-button" routerLink="/registrations/new">New Registration</a></header>
+
+  <section class="ops-section filters">
+    <div class="date-presets ops-segmented">
+      @for (preset of presets; track preset.value) { <button type="button" [class.active]="activePreset === preset.value" (click)="applyPreset(preset.value)">{{ preset.label }}</button> }
+    </div>
+    <form [formGroup]="form" (ngSubmit)="search(0)">
+      <div class="ops-grid">
+        <div class="ops-field"><label>Registration No</label><input formControlName="registrationNo" /></div>
+        <div class="ops-field"><label>Bill No</label><input formControlName="billNo" /></div>
+        <div class="ops-field"><label>Patient ID</label><input formControlName="patientId" /></div>
+        <div class="ops-field"><label>Patient Name</label><input formControlName="patientName" /></div>
+        <div class="ops-field"><label>Mobile</label><input formControlName="mobile" /></div>
+        <div class="ops-field"><label>Branch</label><select formControlName="branchId"><option value="">All branches</option>@for (branch of branches; track branch.id) { <option [value]="branch.id">{{ branch.branchName }}</option> }</select></div>
+        <div class="ops-field"><label>From Date</label><input type="date" formControlName="fromDate" (change)="customDateChanged()" /></div>
+        <div class="ops-field"><label>To Date</label><input type="date" formControlName="toDate" (change)="customDateChanged()" /></div>
+      </div>
+      <div class="ops-actions filter-actions"><button type="button" class="ops-button secondary" (click)="reset()">Reset</button><button type="submit" class="ops-button" [disabled]="loading">Search</button></div>
+    </form>
+  </section>
+
+  @if (errorMessage) { <div class="ops-notification error">{{ errorMessage }}</div> }
+  <div class="result-count">{{ result.totalElements }} registration{{ result.totalElements === 1 ? '' : 's' }}</div>
+  <div class="ops-table-wrap">
+    <table class="ops-table registration-table">
+      <thead><tr><th>Registration No</th><th>Bill No</th><th>Date / Time</th><th>Patient</th><th>Mobile</th><th class="number">Tests</th><th class="number">Bill</th><th class="number">Paid</th><th class="number">Due</th><th>Status</th><th>Branch</th><th>Actions</th></tr></thead>
+      <tbody>
+        @if (loading) { <tr><td colspan="12" class="ops-loading">Loading registrations...</td></tr> }
+        @for (row of result.content; track row.registrationNo) {
+          <tr><td><strong>{{ row.registrationNo }}</strong></td><td>{{ row.billNo }}</td><td>{{ row.registrationDatetime | date:'dd MMM yyyy, hh:mm a' }}</td><td>{{ row.patientName }}<br><small>{{ row.patientId }}</small></td><td>{{ row.mobile }}</td><td class="number">{{ row.testCount }}</td><td class="number">{{ row.billAmount | currency:'INR':'symbol':'1.2-2' }}</td><td class="number">{{ row.paidAmount | currency:'INR':'symbol':'1.2-2' }}</td><td class="number">{{ row.dueAmount | currency:'INR':'symbol':'1.2-2' }}</td><td><span class="ops-status" [class]="'ops-status ' + row.status.toLowerCase().replace('_', '-')">{{ row.status.replace('_', ' ') }}</span></td><td>{{ row.branchName }}</td><td><div class="actions-cell"><a class="ops-button small secondary" [routerLink]="['/registrations', row.registrationNo]">View</a><a class="ops-button small secondary" [routerLink]="['/registrations', row.registrationNo, 'bill']">Bill</a></div></td></tr>
+        } @empty { @if (!loading) { <tr><td colspan="12" class="ops-empty">No registrations found.</td></tr> } }
+      </tbody>
+    </table>
+  </div>
+  <div class="ops-pagination"><span>Page {{ result.totalPages ? result.page + 1 : 0 }} of {{ result.totalPages }}</span><div class="ops-actions"><button class="ops-button small secondary" [disabled]="result.page === 0 || loading" (click)="search(result.page - 1)">Previous</button><button class="ops-button small secondary" [disabled]="result.page + 1 >= result.totalPages || loading" (click)="search(result.page + 1)">Next</button></div></div>
+</section>

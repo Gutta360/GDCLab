@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "patients")
@@ -33,6 +34,9 @@ public class Patient {
             length = 20
     )
     private String patientId;
+
+    @Column(name = "title", length = 20)
+    private String title;
 
     @Column(
             name = "first_name",
@@ -70,10 +74,18 @@ public class Patient {
 
     @Column(
             name = "address",
-            nullable = false,
             length = 255
     )
     private String address;
+
+    @Column(name = "aadhaar_no", length = 12)
+    private String aadhaarNo;
+
+    @Column(name = "email", length = 254)
+    private String email;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(
@@ -162,6 +174,9 @@ public class Patient {
         return patientId;
     }
 
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
     public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
@@ -213,6 +228,13 @@ public class Patient {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    public String getAadhaarNo() { return aadhaarNo; }
+    public void setAadhaarNo(String aadhaarNo) { this.aadhaarNo = aadhaarNo; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 
     public ReferredBy getReferredBy() {
         return referredBy;

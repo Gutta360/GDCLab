@@ -11,18 +11,12 @@ import java.util.Optional;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-    Optional<Patient> findByPatientId(String patientId);
-
     Optional<Patient> findByPatientIdAndActiveTrue(String patientId);
-
-    boolean existsByPatientId(String patientId);
-
-    List<Patient> findAllByActiveTrue();
 
     @Query(
             value = """
             SELECT *
-            FROM patients p
+            FROM gdclab.patients p
             WHERE p.is_active = true
               AND (
                   LOWER(p.patient_id) LIKE LOWER(CONCAT('%', :query, '%'))
@@ -64,7 +58,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     );
 
     @Query(
-            value = "SELECT nextval('patient_number_seq')",
+            value = "SELECT nextval('gdclab.patient_number_seq')",
             nativeQuery = true
     )
     Long getNextPatientNumber();
