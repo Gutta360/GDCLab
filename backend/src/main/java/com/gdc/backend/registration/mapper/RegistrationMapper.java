@@ -20,8 +20,8 @@ public class RegistrationMapper {
     }
     public RegistrationResponse response(Registration r,List<Payment> payments) {
         return new RegistrationResponse(r.getRegistrationNo(),r.getBillNo(),r.getRegistrationDatetime(),
-                r.getPatient().getPatientId(),r.getPatientTitleSnapshot(),r.getPatientNameSnapshot(),r.getPatientAgeSnapshot(),
-                r.getPatientGenderSnapshot(),r.getPatientMobileSnapshot(),r.getPatientAddressSnapshot(),
+                r.getPatientTitle(),r.getPatientName(),r.getPatientAge(),r.getPatientGender(),r.getPatientMobile(),
+                r.getPatientEmail(),r.getPatientDateOfBirth(),r.getPatientAddress(),
                 r.getBranch().getId(),r.getBranchCodeSnapshot(),r.getBranchNameSnapshot(),
                 r.getReferringDoctor()==null?null:r.getReferringDoctor().getId(),r.getReferringDoctorNameSnapshot(),
                 r.getReferringDoctorQualificationSnapshot(),r.getReferringLab()==null?null:r.getReferringLab().getId(),
@@ -36,8 +36,8 @@ public class RegistrationMapper {
                 t.getTestPrice(),t.getDiscountPercentage(),t.getDiscountAmount(),t.getTotalAmount()));
         return new BillResponse(r.getBranchNameSnapshot(),r.getBranchAddressSnapshot(),r.getBranchPhoneSnapshot(),
                 r.getBranchMobileSnapshot(),r.getRegistrationNo(),r.getBillNo(),r.getRegistrationDatetime(),
-                r.getPatientTitleSnapshot(),r.getPatientNameSnapshot(),r.getPatientAgeSnapshot(),r.getPatientGenderSnapshot(),
-                r.getPatientMobileSnapshot(),r.getPatientAddressSnapshot(),r.getReferringDoctorNameSnapshot(),
+                r.getPatientTitle(),r.getPatientName(),r.getPatientAge(),r.getPatientGender(),
+                r.getPatientMobile(),r.getPatientAddress(),r.getReferringDoctorNameSnapshot(),
                 r.getReferringDoctorQualificationSnapshot(),r.getReferringLabNameSnapshot(),lines,r.getBillAmount(),
                 r.getDiscountPercentage(),r.getDiscountAmount(),r.getFinalBillAmount(),r.getPaidAmount(),r.getDueAmount(),r.getCreatedBy());
     }

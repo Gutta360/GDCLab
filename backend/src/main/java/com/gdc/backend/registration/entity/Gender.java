@@ -1,7 +1,6 @@
-package com.gdc.backend.patient.entity;
+package com.gdc.backend.registration.entity;
 
 public enum Gender {
-
     MALE,
     FEMALE,
     OTHER

@@ -1,7 +1,5 @@
 package com.gdc.backend.common.exception;
 
-import com.gdc.backend.patient.exception.PatientNotFoundException;
-import com.gdc.backend.patient.exception.PatientValidationException;
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PessimisticLockException;
 import org.springframework.dao.CannotAcquireLockException;
@@ -43,8 +41,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            PatientValidationException.class
-            , BusinessValidationException.class
+            BusinessValidationException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException exception) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), Map.of());
@@ -56,8 +53,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            PatientNotFoundException.class
-            , ResourceNotFoundException.class
+            ResourceNotFoundException.class
     })
     public ResponseEntity<ApiErrorResponse> handleNotFound(RuntimeException exception) {
         return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), Map.of());

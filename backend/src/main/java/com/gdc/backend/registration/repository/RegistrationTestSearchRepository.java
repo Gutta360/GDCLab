@@ -28,7 +28,7 @@ public class RegistrationTestSearchRepository {
             p.addValue("category", "%" + category.trim() + "%");
         }
         RegistrationSearchRepository.contains(where,p,"r.registration_no","registrationNo",registrationNo);
-        RegistrationSearchRepository.contains(where,p,"r.patient_name_snapshot","patientName",patientName);
+        RegistrationSearchRepository.contains(where,p,"r.patient_name","patientName",patientName);
         if (branchId != null) { where.append(" AND r.branch_id=:branchId"); p.addValue("branchId",branchId); }
         if (status != null) { where.append(" AND rt.status=:status"); p.addValue("status",status.name()); }
         if (mode == TestDateMode.COMPLETED) where.append(" AND rt.completed_at IS NOT NULL");
@@ -43,13 +43,13 @@ public class RegistrationTestSearchRepository {
         String sql = """
                 SELECT %s business_datetime,dt.test_code,rt.test_name_snapshot,
                        rt.category_code_snapshot,rt.category_name_snapshot,rt.status,
-                       r.registration_no,r.bill_no,r.patient_name_snapshot,rt.test_price,
+                       r.registration_no,r.bill_no,r.patient_name,rt.test_price,
                        rt.discount_amount,rt.total_amount,r.branch_code_snapshot,r.branch_name_snapshot
                 """.formatted(dateColumn) + from + where + " ORDER BY " + dateColumn + " DESC,rt.id DESC LIMIT :limit OFFSET :offset";
         var rows = jdbc.query(sql,p,(rs,n)->new RegistrationTestSearchRow(
                 rs.getTimestamp("business_datetime").toInstant(),rs.getString("test_code"),rs.getString("test_name_snapshot"),
                 rs.getString("category_code_snapshot"),rs.getString("category_name_snapshot"),TestStatus.valueOf(rs.getString("status")),
-                rs.getString("registration_no"),rs.getString("bill_no"),rs.getString("patient_name_snapshot"),
+                rs.getString("registration_no"),rs.getString("bill_no"),rs.getString("patient_name"),
                 rs.getBigDecimal("test_price"),rs.getBigDecimal("discount_amount"),rs.getBigDecimal("total_amount"),
                 rs.getString("branch_code_snapshot"),rs.getString("branch_name_snapshot")));
         return new PagedReportResponse<>(PageResponse.of(rows,page,size,summary.totalTests()),summary);

@@ -24,7 +24,7 @@ export class RegistrationSearch implements OnInit {
   errorMessage = '';
 
   readonly form = this.fb.group({
-    registrationNo: [''], billNo: [''], patientId: [''], patientName: [''], mobile: [''],
+    registrationNo: [''], billNo: [''], patientName: [''], mobile: [''],
     branchId: [''], fromDate: [''], toDate: ['']
   });
 
@@ -76,7 +76,7 @@ export class RegistrationSearch implements OnInit {
   }
 
   reset(): void {
-    this.form.reset({ registrationNo: '', billNo: '', patientId: '', patientName: '', mobile: '', branchId: '', fromDate: '', toDate: '' });
+    this.form.reset({ registrationNo: '', billNo: '', patientName: '', mobile: '', branchId: '', fromDate: '', toDate: '' });
     this.applyPreset('TODAY');
   }
 
@@ -85,7 +85,6 @@ export class RegistrationSearch implements OnInit {
     return {
       registrationNo: value.registrationNo?.trim() || undefined,
       billNo: value.billNo?.trim() || undefined,
-      patientId: value.patientId?.trim() || undefined,
       patientName: value.patientName?.trim() || undefined,
       mobile: value.mobile?.trim() || undefined,
       branchId: value.branchId ? Number(value.branchId) : undefined,

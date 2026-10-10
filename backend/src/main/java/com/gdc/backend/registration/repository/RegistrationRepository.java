@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
-    @EntityGraph(attributePaths = {"patient", "branch", "referringDoctor", "referringLab", "tests", "tests.test", "tests.test.category"})
+    @EntityGraph(attributePaths = {"branch", "referringDoctor", "referringLab", "tests", "tests.test", "tests.test.category"})
     Optional<Registration> findByRegistrationNo(String registrationNo);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

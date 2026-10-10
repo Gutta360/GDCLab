@@ -44,7 +44,7 @@ fi
 echo "JAR found"
 
 echo ""
-echo "2a. Verifying Flyway auto-configuration and Patient migration..."
+echo "2a. Verifying Flyway auto-configuration and clean foundation migration..."
 
 if ! jar tf "$LOCAL_JAR" | grep -q 'BOOT-INF/lib/spring-boot-flyway-'; then
     echo "ERROR: spring-boot-flyway is missing from $LOCAL_JAR."
@@ -56,12 +56,18 @@ if ! jar tf "$LOCAL_JAR" | grep -q 'BOOT-INF/lib/flyway-database-postgresql-'; t
     exit 1
 fi
 
-if ! jar tf "$LOCAL_JAR" | grep -q 'BOOT-INF/classes/db/migration/V1__create_patient_module.sql'; then
-    echo "ERROR: Patient migration is missing from $LOCAL_JAR."
+if ! jar tf "$LOCAL_JAR" | grep -q 'BOOT-INF/classes/db/migration/V1__create_diagnostic_registration_module.sql'; then
+    echo "ERROR: Diagnostic foundation migration is missing from $LOCAL_JAR."
     exit 1
 fi
 
-echo "Flyway Patient migration packaged"
+MIGRATION_COUNT="$(jar tf "$LOCAL_JAR" | grep -c 'BOOT-INF/classes/db/migration/.*\.sql$')"
+if [ "$MIGRATION_COUNT" -ne 1 ]; then
+    echo "ERROR: Expected exactly one Flyway foundation migration in $LOCAL_JAR; found $MIGRATION_COUNT."
+    exit 1
+fi
+
+echo "Clean Flyway foundation migration packaged"
 
 echo ""
 echo "3. Uploading JAR..."
@@ -79,12 +85,12 @@ set -e
 
 mv "$REMOTE_NEW" "$REMOTE_JAR"
 
-jar tf "$REMOTE_JAR" | grep 'BOOT-INF/classes/db/migration/V1__create_patient_module.sql'
+jar tf "$REMOTE_JAR" | grep 'BOOT-INF/classes/db/migration/V1__create_diagnostic_registration_module.sql'
 
 sudo -n systemctl restart "$SERVICE"
 
 for attempt in {1..30}; do
-    if curl -fsS http://localhost:8090/api/v1/patients > /dev/null; then
+    if curl -fsS http://localhost:8090/api/v1/branches > /dev/null; then
         break
     fi
 
@@ -99,7 +105,7 @@ done
 
 systemctl status "$SERVICE" --no-pager -l
 ss -ltn | grep ':8090'
-curl -f http://localhost:8090/api/v1/patients > /dev/null
+curl -f http://localhost:8090/api/v1/branches > /dev/null
 
 EOF
 

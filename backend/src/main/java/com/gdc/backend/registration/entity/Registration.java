@@ -2,13 +2,12 @@ package com.gdc.backend.registration.entity;
 
 import com.gdc.backend.branch.entity.Branch;
 import com.gdc.backend.common.entity.AuditedEntity;
-import com.gdc.backend.patient.entity.Gender;
-import com.gdc.backend.patient.entity.Patient;
 import com.gdc.backend.referral.entity.ReferralSource;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +17,20 @@ public class Registration extends AuditedEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(name = "registration_no", nullable = false, unique = true, length = 20) private String registrationNo;
     @Column(name = "bill_no", nullable = false, unique = true, length = 20) private String billNo;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "patient_id") private Patient patient;
+    @Column(name = "patient_title", length = 20) private String patientTitle;
+    @Column(name = "patient_name", nullable = false, length = 101) private String patientName;
+    @Column(name = "patient_mobile", nullable = false, length = 10) private String patientMobile;
+    @Column(name = "patient_aadhaar", length = 12) private String patientAadhaar;
+    @Enumerated(EnumType.STRING) @Column(name = "patient_gender", nullable = false, length = 10) private Gender patientGender;
+    @Column(name = "patient_email", length = 254) private String patientEmail;
+    @Column(name = "patient_date_of_birth") private LocalDate patientDateOfBirth;
+    @Column(name = "patient_age", nullable = false) private Short patientAge;
+    @Column(name = "patient_address", length = 255) private String patientAddress;
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "branch_id") private Branch branch;
     @Column(name = "registration_datetime", nullable = false) private Instant registrationDatetime;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "referring_doctor_id") private ReferralSource referringDoctor;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "referring_lab_id") private ReferralSource referringLab;
 
-    @Column(name = "patient_title_snapshot", length = 20) private String patientTitleSnapshot;
-    @Column(name = "patient_name_snapshot", nullable = false, length = 101) private String patientNameSnapshot;
-    @Column(name = "patient_age_snapshot", nullable = false) private Short patientAgeSnapshot;
-    @Enumerated(EnumType.STRING) @Column(name = "patient_gender_snapshot", nullable = false, length = 10) private Gender patientGenderSnapshot;
-    @Column(name = "patient_mobile_snapshot", nullable = false, length = 20) private String patientMobileSnapshot;
-    @Column(name = "patient_address_snapshot", length = 255) private String patientAddressSnapshot;
     @Column(name = "branch_code_snapshot", nullable = false, length = 20) private String branchCodeSnapshot;
     @Column(name = "branch_name_snapshot", nullable = false, length = 150) private String branchNameSnapshot;
     @Column(name = "branch_address_snapshot", nullable = false, length = 500) private String branchAddressSnapshot;
@@ -55,8 +56,24 @@ public class Registration extends AuditedEntity {
     public void setRegistrationNo(String value) { registrationNo = value; }
     public String getBillNo() { return billNo; }
     public void setBillNo(String value) { billNo = value; }
-    public Patient getPatient() { return patient; }
-    public void setPatient(Patient value) { patient = value; }
+    public String getPatientTitle() { return patientTitle; }
+    public void setPatientTitle(String value) { patientTitle = value; }
+    public String getPatientName() { return patientName; }
+    public void setPatientName(String value) { patientName = value; }
+    public String getPatientMobile() { return patientMobile; }
+    public void setPatientMobile(String value) { patientMobile = value; }
+    public String getPatientAadhaar() { return patientAadhaar; }
+    public void setPatientAadhaar(String value) { patientAadhaar = value; }
+    public Gender getPatientGender() { return patientGender; }
+    public void setPatientGender(Gender value) { patientGender = value; }
+    public String getPatientEmail() { return patientEmail; }
+    public void setPatientEmail(String value) { patientEmail = value; }
+    public LocalDate getPatientDateOfBirth() { return patientDateOfBirth; }
+    public void setPatientDateOfBirth(LocalDate value) { patientDateOfBirth = value; }
+    public Short getPatientAge() { return patientAge; }
+    public void setPatientAge(Short value) { patientAge = value; }
+    public String getPatientAddress() { return patientAddress; }
+    public void setPatientAddress(String value) { patientAddress = value; }
     public Branch getBranch() { return branch; }
     public void setBranch(Branch value) { branch = value; }
     public Instant getRegistrationDatetime() { return registrationDatetime; }
@@ -65,18 +82,6 @@ public class Registration extends AuditedEntity {
     public void setReferringDoctor(ReferralSource value) { referringDoctor = value; }
     public ReferralSource getReferringLab() { return referringLab; }
     public void setReferringLab(ReferralSource value) { referringLab = value; }
-    public String getPatientTitleSnapshot() { return patientTitleSnapshot; }
-    public void setPatientTitleSnapshot(String value) { patientTitleSnapshot = value; }
-    public String getPatientNameSnapshot() { return patientNameSnapshot; }
-    public void setPatientNameSnapshot(String value) { patientNameSnapshot = value; }
-    public Short getPatientAgeSnapshot() { return patientAgeSnapshot; }
-    public void setPatientAgeSnapshot(Short value) { patientAgeSnapshot = value; }
-    public Gender getPatientGenderSnapshot() { return patientGenderSnapshot; }
-    public void setPatientGenderSnapshot(Gender value) { patientGenderSnapshot = value; }
-    public String getPatientMobileSnapshot() { return patientMobileSnapshot; }
-    public void setPatientMobileSnapshot(String value) { patientMobileSnapshot = value; }
-    public String getPatientAddressSnapshot() { return patientAddressSnapshot; }
-    public void setPatientAddressSnapshot(String value) { patientAddressSnapshot = value; }
     public String getBranchCodeSnapshot() { return branchCodeSnapshot; }
     public void setBranchCodeSnapshot(String value) { branchCodeSnapshot = value; }
     public String getBranchNameSnapshot() { return branchNameSnapshot; }

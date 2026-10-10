@@ -1,8 +1,8 @@
 # GDCLab
 
-GDCLab is a lightweight laboratory clone of GDC2.0. It preserves the same Angular, Spring Boot, PostgreSQL, Flyway, Docker, and Nginx deployment shape, but only the Patient module is functional.
+GDCLab is a diagnostic registration, testing, billing and payments application built with Angular, Spring Boot, PostgreSQL and Flyway.
 
-Removed modules such as appointments, treatments, pharmacy, payments, dashboard, calendar, clinical, and reports are not present in the backend. The Angular shell keeps Patient plus placeholder tabs that render `Coming Soon`.
+Each Registration is an independent diagnostic visit and directly owns its person details. There is no separate person master or cross-visit identity record. The same name or mobile number may appear on any number of registrations.
 
 ## Backend
 
@@ -11,9 +11,7 @@ cd backend
 mvn spring-boot:run
 ```
 
-The backend listens on port `8090`.
-
-Default database configuration:
+The backend listens on port `8090` and uses PostgreSQL database `gdc`, schema `gdclab`:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/gdc?currentSchema=gdclab
@@ -21,14 +19,16 @@ spring.datasource.username=gdc_user
 spring.datasource.password=${DB_PASSWORD}
 spring.flyway.schemas=gdclab
 spring.flyway.default-schema=gdclab
+spring.jpa.hibernate.ddl-auto=validate
 ```
 
-Flyway creates and uses only the `gdclab` schema. The immutable
-`V1__create_patient_module.sql` defines Patient master data;
-`V2__create_diagnostic_registration_module.sql` adds the diagnostic database
-foundation. See [Phase 2](database/PHASE2.md) for the schema, constraints,
-all 41 seeded tests and migration verification. Diagnostic APIs and screens
-will be integrated in later approved phases.
+Flyway has one clean-install migration:
+
+```text
+backend/src/main/resources/db/migration/V1__create_diagnostic_registration_module.sql
+```
+
+It creates Branch, Referral Source, Test Category, Diagnostic Test, Registration, Registration Test and Payment storage and seeds 19 CT Scan plus 22 Ultrasound tests.
 
 ## Frontend
 
@@ -38,38 +38,16 @@ npm ci
 npm start
 ```
 
-For production under the Nginx `/gdclab/` path:
+Production build for the Nginx `/gdclab/` path:
 
 ```bash
 npm run build -- --configuration production --base-href /gdclab/
 ```
 
-## Nginx
-
-Use `docker/nginx-gdclab.conf` as an additional location block inside the existing GDC2.0 server configuration. It serves the GDCLab frontend from `/var/www/gdclab` and proxies `/gdclab/api/` to `localhost:8090`.
+Navigation is Home, Registration, Tests, Payments and Logout. New Registration captures person details directly before referral, test, billing and payment details.
 
 ## Deployment
 
-Backend:
+Repository deployment helpers target only GDCLab. The backend readiness endpoint is `GET /api/v1/branches`. See [database/PHASE2.md](database/PHASE2.md) for the clean schema and verification workflow.
 
-```bash
-cd backend
-SERVER=user@host DB_PASSWORD=... ./deploy-backend.sh
-```
-
-Frontend:
-
-```bash
-cd frontend
-SERVER=user@host ./deploy-frontend.sh
-```
-
-Install `backend/gdclab-backend.service` as the independent systemd service for GDCLab. Keep the existing GDC2.0 service unchanged.
-
-## Docker
-
-```bash
-DB_PASSWORD=... docker compose up --build
-```
-
-The compose file starts only the GDCLab backend and points it at the existing PostgreSQL server through `host.docker.internal`, using the `gdclab` schema.
+GDCLab shares the `gdc` database with other applications. Never drop the database or the `public` schema. A foundation reset must drop and recreate only schema `gdclab` while the GDCLab backend is stopped.

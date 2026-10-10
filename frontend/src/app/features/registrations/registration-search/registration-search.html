@@ -9,7 +9,6 @@
       <div class="ops-grid">
         <div class="ops-field"><label>Registration No</label><input formControlName="registrationNo" /></div>
         <div class="ops-field"><label>Bill No</label><input formControlName="billNo" /></div>
-        <div class="ops-field"><label>Patient ID</label><input formControlName="patientId" /></div>
         <div class="ops-field"><label>Patient Name</label><input formControlName="patientName" /></div>
         <div class="ops-field"><label>Mobile</label><input formControlName="mobile" /></div>
         <div class="ops-field"><label>Branch</label><select formControlName="branchId"><option value="">All branches</option>@for (branch of branches; track branch.id) { <option [value]="branch.id">{{ branch.branchName }}</option> }</select></div>
@@ -28,7 +27,7 @@
       <tbody>
         @if (loading) { <tr><td colspan="12" class="ops-loading">Loading registrations...</td></tr> }
         @for (row of result.content; track row.registrationNo) {
-          <tr><td><strong>{{ row.registrationNo }}</strong></td><td>{{ row.billNo }}</td><td>{{ row.registrationDatetime | date:'dd MMM yyyy, hh:mm a' }}</td><td>{{ row.patientName }}<br><small>{{ row.patientId }}</small></td><td>{{ row.mobile }}</td><td class="number">{{ row.testCount }}</td><td class="number">{{ row.billAmount | currency:'INR':'symbol':'1.2-2' }}</td><td class="number">{{ row.paidAmount | currency:'INR':'symbol':'1.2-2' }}</td><td class="number">{{ row.dueAmount | currency:'INR':'symbol':'1.2-2' }}</td><td><span class="ops-status" [class]="'ops-status ' + row.status.toLowerCase().replace('_', '-')">{{ row.status.replace('_', ' ') }}</span></td><td>{{ row.branchName }}</td><td><div class="actions-cell"><a class="ops-button small secondary" [routerLink]="['/registrations', row.registrationNo]">View</a><a class="ops-button small secondary" [routerLink]="['/registrations', row.registrationNo, 'bill']">Bill</a></div></td></tr>
+          <tr><td><strong>{{ row.registrationNo }}</strong></td><td>{{ row.billNo }}</td><td>{{ row.registrationDatetime | date:'dd MMM yyyy, hh:mm a' }}</td><td>{{ row.patientName }}</td><td>{{ row.mobile }}</td><td class="number">{{ row.testCount }}</td><td class="number">{{ row.billAmount | currency:'INR':'symbol':'1.2-2' }}</td><td class="number">{{ row.paidAmount | currency:'INR':'symbol':'1.2-2' }}</td><td class="number">{{ row.dueAmount | currency:'INR':'symbol':'1.2-2' }}</td><td><span class="ops-status" [class]="'ops-status ' + row.status.toLowerCase().replace('_', '-')">{{ row.status.replace('_', ' ') }}</span></td><td>{{ row.branchName }}</td><td><div class="actions-cell"><a class="ops-button small secondary" [routerLink]="['/registrations', row.registrationNo]">View</a><a class="ops-button small secondary" [routerLink]="['/registrations', row.registrationNo, 'bill']">Bill</a></div></td></tr>
         } @empty { @if (!loading) { <tr><td colspan="12" class="ops-empty">No registrations found.</td></tr> } }
       </tbody>
     </table>

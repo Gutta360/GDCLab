@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
-import { PatientResponse, PatientSummary } from '../../patients/models/patient.model';
-import { PatientService } from '../../patients/services/patient.service';
+import { Observable, catchError, finalize, forkJoin, of } from 'rxjs';
 import {
   BranchResponse,
   DiagnosticTestResponse,
@@ -34,14 +32,9 @@ interface SelectedTest {
 export class NewRegistration implements OnInit {
   private readonly fb = inject(FormBuilder);
   loadingMasters = true;
-  searchingPatients = false;
   submitting = false;
-  patientMode: 'new' | 'existing' = 'new';
-  patientQuery = '';
   testQuery = '';
   categoryFilter = '';
-  patientResults: PatientSummary[] = [];
-  selectedPatient: PatientResponse | null = null;
   branches: BranchResponse[] = [];
   doctors: ReferralSourceResponse[] = [];
   labs: ReferralSourceResponse[] = [];
@@ -60,8 +53,7 @@ export class NewRegistration implements OnInit {
     referringDoctorId: [''],
     referringLabId: [''],
     title: [''],
-    firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), Validators.pattern(/^[A-Za-z ]+$/)]],
-    lastName: ['', [Validators.maxLength(50), Validators.pattern(/^[A-Za-z ]*$/)]],
+    patientName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(101), Validators.pattern(/^[A-Za-z ]+$/)]],
     mobile: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     aadhaarNo: ['', Validators.pattern(/^\d{12}$/)],
     gender: ['', Validators.required],
@@ -77,7 +69,6 @@ export class NewRegistration implements OnInit {
   });
 
   constructor(
-    private patientService: PatientService,
     private branchService: BranchService,
     private referralService: ReferralService,
     private testService: DiagnosticTestService,
@@ -88,10 +79,10 @@ export class NewRegistration implements OnInit {
 
   ngOnInit(): void {
     forkJoin({
-      branches: this.branchService.getActive(),
-      doctors: this.referralService.getActive('DOCTOR'),
-      labs: this.referralService.getActive('LAB'),
-      tests: this.testService.search(undefined, undefined, true)
+      branches: this.referenceData(this.branchService.getActive(), 'branches'),
+      doctors: this.referenceData(this.referralService.getActive('DOCTOR'), 'referring doctors'),
+      labs: this.referenceData(this.referralService.getActive('LAB'), 'referring labs'),
+      tests: this.referenceData(this.testService.search(undefined, undefined, true), 'diagnostic tests')
     }).pipe(finalize(() => {
       this.loadingMasters = false;
       this.cdr.detectChanges();
@@ -102,9 +93,15 @@ export class NewRegistration implements OnInit {
         this.labs = data.labs;
         this.tests = data.tests;
         if (this.branches.length === 1) this.form.patchValue({ branchId: String(this.branches[0].id) });
-      },
-      error: error => this.show(apiErrorMessage(error, 'Could not load registration masters.'), true)
+      }
     });
+  }
+
+  private referenceData<T>(source: Observable<T[]>, label: string): Observable<T[]> {
+    return source.pipe(catchError(error => {
+      this.show(apiErrorMessage(error, `Could not load ${label}.`), true);
+      return of([]);
+    }));
   }
 
   get categories(): { code: string; name: string }[] {
@@ -140,54 +137,6 @@ export class NewRegistration implements OnInit {
 
   get previewDueAmount(): number {
     return this.round(Math.max(0, this.finalBillAmount - this.previewPaidAmount));
-  }
-
-  searchPatients(): void {
-    const query = this.patientQuery.trim();
-    if (!query) {
-      this.patientResults = [];
-      return;
-    }
-    this.searchingPatients = true;
-    this.patientService.searchActivePatients(query).pipe(finalize(() => {
-      this.searchingPatients = false;
-      this.cdr.detectChanges();
-    })).subscribe({
-      next: results => this.patientResults = results,
-      error: error => this.show(apiErrorMessage(error, 'Could not search patients.'), true)
-    });
-  }
-
-  selectPatient(summary: PatientSummary): void {
-    this.searchingPatients = true;
-    this.patientService.getPatient(summary.patientId).pipe(finalize(() => {
-      this.searchingPatients = false;
-      this.cdr.detectChanges();
-    })).subscribe({
-      next: patient => {
-        this.patientMode = 'existing';
-        this.selectedPatient = patient;
-        this.patientResults = [];
-        this.patientQuery = `${patient.patientId} - ${patient.fullName}`;
-        this.form.patchValue({
-          title: patient.title ?? '', firstName: patient.firstName, lastName: patient.lastName ?? '',
-          mobile: patient.mobile, aadhaarNo: '', gender: patient.gender, email: patient.email ?? '',
-          dateOfBirth: patient.dateOfBirth ?? '', age: String(patient.age), address: patient.address ?? ''
-        });
-      },
-      error: error => this.show(apiErrorMessage(error, 'Could not load patient.'), true)
-    });
-  }
-
-  useNewPatient(): void {
-    this.patientMode = 'new';
-    this.selectedPatient = null;
-    this.patientResults = [];
-    this.patientQuery = '';
-    this.form.patchValue({
-      title: '', firstName: '', lastName: '', mobile: '', aadhaarNo: '', gender: '', email: '',
-      dateOfBirth: '', age: '', address: ''
-    });
   }
 
   normalizeDigits(controlName: 'mobile' | 'aadhaarNo', length: number): void {
@@ -273,20 +222,15 @@ export class NewRegistration implements OnInit {
   private request(initialAmount: number): RegistrationCreateRequest {
     const value = this.form.getRawValue();
     return {
-      patient: {
-        patientId: this.selectedPatient?.patientId ?? null,
-        updateExisting: false,
-        title: value.title?.trim() || null,
-        firstName: value.firstName?.trim() || '',
-        lastName: value.lastName?.trim() || null,
-        gender: value.gender as RegistrationCreateRequest['patient']['gender'],
-        age: this.number(value.age),
-        mobile: value.mobile || '',
-        address: value.address?.trim() || null,
-        email: value.email?.trim() || null,
-        dateOfBirth: value.dateOfBirth || null,
-        aadhaarNo: this.selectedPatient ? null : (value.aadhaarNo || null)
-      },
+      patientTitle: value.title?.trim() || null,
+      patientName: value.patientName?.trim() || '',
+      patientMobile: value.mobile || '',
+      patientAadhaar: value.aadhaarNo || null,
+      patientGender: value.gender as RegistrationCreateRequest['patientGender'],
+      patientEmail: value.email?.trim() || null,
+      patientDateOfBirth: value.dateOfBirth || null,
+      patientAge: this.number(value.age),
+      patientAddress: value.address?.trim() || null,
       branchId: Number(value.branchId),
       referringDoctorId: value.referringDoctorId ? Number(value.referringDoctorId) : null,
       referringLabId: value.referringLabId ? Number(value.referringLabId) : null,

@@ -22,7 +22,8 @@ public class DiagnosticTestService {
     }
     public List<DiagnosticTestResponse> search(String query, String category, Boolean active) {
         String q = normalize(query); String c = normalize(category);
-        return tests.search(q, c, active).stream().map(this::response).toList();
+        return tests.search(q == null ? "" : q, c == null ? "" : c,
+                Boolean.TRUE.equals(active), active != null).stream().map(this::response).toList();
     }
     public DiagnosticTest get(String code) {
         return tests.findByTestCodeWithCategory(code == null ? "" : code.trim())

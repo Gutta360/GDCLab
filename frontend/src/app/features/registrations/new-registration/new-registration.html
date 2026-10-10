@@ -34,50 +34,18 @@
       </section>
 
       <section class="ops-section">
-        <div class="ops-section-title">
-          <h2>Patient</h2>
-          <div class="ops-segmented" aria-label="Patient mode">
-            <button type="button" [class.active]="patientMode === 'new'" (click)="useNewPatient()">New Patient</button>
-            <button type="button" [class.active]="patientMode === 'existing'" [disabled]="!selectedPatient">Existing Patient</button>
-          </div>
-        </div>
+        <div class="ops-section-title"><h2>Person Details</h2></div>
 
-        <div class="patient-search-block">
-          <label class="ops-label" for="patientSearch">Search existing patient</label>
-          <div class="ops-inline-search">
-            <input id="patientSearch" class="ops-input" [(ngModel)]="patientQuery" [ngModelOptions]="{standalone: true}" placeholder="Patient ID, name or mobile" (keyup.enter)="searchPatients()" />
-            <button type="button" class="ops-button secondary" (click)="searchPatients()" [disabled]="searchingPatients">Search</button>
-          </div>
-          @if (patientResults.length) {
-            <div class="ops-search-results">
-              @for (patient of patientResults; track patient.patientId) {
-                <button type="button" class="ops-search-option" (click)="selectPatient(patient)">
-                  <span><strong>{{ patient.patientId }}</strong> &nbsp; {{ patient.fullName }}</span>
-                  <span>{{ patient.mobile }}</span>
-                </button>
-              }
-            </div>
-          }
-        </div>
-
-        @if (selectedPatient) {
-          <div class="selected-patient-banner">
-            <strong>{{ selectedPatient.patientId }} - {{ selectedPatient.fullName }}</strong>
-            <span>Existing patient selected for a new diagnostic visit.</span>
-          </div>
-        }
-
-        <div class="ops-grid patient-grid">
-          <div class="ops-field"><label for="title">Title</label><select id="title" formControlName="title" [attr.disabled]="patientMode === 'existing' ? true : null"><option value="">Select</option><option>Mr</option><option>Mrs</option><option>Ms</option><option>Master</option><option>Baby</option></select></div>
-          <div class="ops-field"><label for="firstName">First Name *</label><input id="firstName" formControlName="firstName" [readonly]="patientMode === 'existing'" />@if (form.controls.firstName.touched && form.controls.firstName.invalid) { <span class="ops-error">Enter a valid first name.</span> }</div>
-          <div class="ops-field"><label for="lastName">Last Name</label><input id="lastName" formControlName="lastName" [readonly]="patientMode === 'existing'" /></div>
-          <div class="ops-field"><label for="mobile">Mobile *</label><input id="mobile" formControlName="mobile" inputmode="numeric" maxlength="10" [readonly]="patientMode === 'existing'" (input)="normalizeDigits('mobile', 10)" />@if (form.controls.mobile.touched && form.controls.mobile.invalid) { <span class="ops-error">Enter exactly 10 digits.</span> }</div>
-          <div class="ops-field"><label for="aadhaarNo">Aadhaar No</label><input id="aadhaarNo" formControlName="aadhaarNo" inputmode="numeric" maxlength="12" [readonly]="patientMode === 'existing'" [placeholder]="selectedPatient?.aadhaarMasked || 'Optional, 12 digits'" (input)="normalizeDigits('aadhaarNo', 12)" />@if (form.controls.aadhaarNo.touched && form.controls.aadhaarNo.invalid) { <span class="ops-error">Aadhaar must contain exactly 12 digits.</span> }</div>
-          <div class="ops-field"><label for="gender">Gender *</label><select id="gender" formControlName="gender" [attr.disabled]="patientMode === 'existing' ? true : null"><option value="">Select</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option></select></div>
-          <div class="ops-field"><label for="email">Email</label><input id="email" type="email" formControlName="email" [readonly]="patientMode === 'existing'" />@if (form.controls.email.touched && form.controls.email.invalid) { <span class="ops-error">Enter a valid email.</span> }</div>
-          <div class="ops-field"><label for="dateOfBirth">Date of Birth</label><input id="dateOfBirth" type="date" formControlName="dateOfBirth" [max]="today" [readonly]="patientMode === 'existing'" (change)="dobChanged()" /></div>
-          <div class="ops-field"><label for="age">Age *</label><input id="age" type="number" formControlName="age" min="0" max="120" [readonly]="patientMode === 'existing' || !!form.value.dateOfBirth" />@if (form.controls.age.touched && form.controls.age.invalid) { <span class="ops-error">Age must be 0 to 120.</span> }</div>
-          <div class="ops-field wide"><label for="address">Address</label><textarea id="address" formControlName="address" [readonly]="patientMode === 'existing'"></textarea></div>
+        <div class="ops-grid person-grid">
+          <div class="ops-field"><label for="title">Title</label><select id="title" formControlName="title"><option value="">Select</option><option>Mr</option><option>Mrs</option><option>Ms</option><option>Master</option><option>Baby</option></select></div>
+          <div class="ops-field"><label for="patientName">Name *</label><input id="patientName" formControlName="patientName" />@if (form.controls.patientName.touched && form.controls.patientName.invalid) { <span class="ops-error">Enter a valid name.</span> }</div>
+          <div class="ops-field"><label for="mobile">Mobile *</label><input id="mobile" formControlName="mobile" inputmode="numeric" maxlength="10" (input)="normalizeDigits('mobile', 10)" />@if (form.controls.mobile.touched && form.controls.mobile.invalid) { <span class="ops-error">Enter exactly 10 digits.</span> }</div>
+          <div class="ops-field"><label for="aadhaarNo">Aadhaar No</label><input id="aadhaarNo" formControlName="aadhaarNo" inputmode="numeric" maxlength="12" placeholder="Optional, 12 digits" (input)="normalizeDigits('aadhaarNo', 12)" />@if (form.controls.aadhaarNo.touched && form.controls.aadhaarNo.invalid) { <span class="ops-error">Aadhaar must contain exactly 12 digits.</span> }</div>
+          <div class="ops-field"><label for="gender">Gender *</label><select id="gender" formControlName="gender"><option value="">Select</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option></select></div>
+          <div class="ops-field"><label for="email">Email</label><input id="email" type="email" formControlName="email" />@if (form.controls.email.touched && form.controls.email.invalid) { <span class="ops-error">Enter a valid email.</span> }</div>
+          <div class="ops-field"><label for="dateOfBirth">Date of Birth</label><input id="dateOfBirth" type="date" formControlName="dateOfBirth" [max]="today" (change)="dobChanged()" /></div>
+          <div class="ops-field"><label for="age">Age *</label><input id="age" type="number" formControlName="age" min="0" max="120" [readonly]="!!form.value.dateOfBirth" />@if (form.controls.age.touched && form.controls.age.invalid) { <span class="ops-error">Age must be 0 to 120.</span> }</div>
+          <div class="ops-field wide"><label for="address">Address</label><textarea id="address" formControlName="address"></textarea></div>
         </div>
       </section>
 

@@ -5,8 +5,6 @@ import com.gdc.backend.branch.service.BranchService;
 import com.gdc.backend.common.dto.PageResponse;
 import com.gdc.backend.common.exception.*;
 import com.gdc.backend.common.money.Money;
-import com.gdc.backend.patient.entity.*;
-import com.gdc.backend.patient.repository.PatientRepository;
 import com.gdc.backend.payment.entity.Payment;
 import com.gdc.backend.payment.repository.PaymentRepository;
 import com.gdc.backend.referral.entity.*;
@@ -30,7 +28,6 @@ public class RegistrationService {
     private final RegistrationRepository registrations;
     private final RegistrationTestRepository registrationTests;
     private final RegistrationSearchRepository searchRepository;
-    private final PatientRepository patients;
     private final BranchService branches;
     private final ReferralService referrals;
     private final DiagnosticTestService testMaster;
@@ -39,17 +36,16 @@ public class RegistrationService {
     private final Clock clock;
 
     public RegistrationService(RegistrationRepository registrations, RegistrationTestRepository registrationTests,
-            RegistrationSearchRepository searchRepository, PatientRepository patients, BranchService branches,
+            RegistrationSearchRepository searchRepository, BranchService branches,
             ReferralService referrals, DiagnosticTestService testMaster, PaymentRepository payments,
             RegistrationMapper mapper, Clock clock) {
         this.registrations=registrations; this.registrationTests=registrationTests; this.searchRepository=searchRepository;
-        this.patients=patients; this.branches=branches; this.referrals=referrals; this.testMaster=testMaster;
+        this.branches=branches; this.referrals=referrals; this.testMaster=testMaster;
         this.payments=payments; this.mapper=mapper; this.clock=clock;
     }
 
     public RegistrationResponse create(RegistrationCreateRequest request) {
         Instant registeredAt = request.registrationDatetime()==null ? clock.instant() : request.registrationDatetime();
-        Patient patient = resolvePatient(request.patient(), registeredAt);
         Branch branch = branches.requireActive(request.branchId());
         ReferralSource doctor = referrals.requireActiveType(request.referringDoctorId(), ReferralType.DOCTOR);
         ReferralSource lab = referrals.requireActiveType(request.referringLabId(), ReferralType.LAB);
@@ -58,9 +54,18 @@ public class RegistrationService {
         Registration registration = new Registration();
         registration.setRegistrationNo(format("REG-", registrations.nextRegistrationNumber()));
         registration.setBillNo(format("BILL-", registrations.nextBillNumber()));
-        registration.setPatient(patient); registration.setBranch(branch); registration.setRegistrationDatetime(registeredAt);
+        registration.setPatientTitle(optional(request.patientTitle()));
+        registration.setPatientName(request.patientName().trim());
+        registration.setPatientMobile(request.patientMobile().trim());
+        registration.setPatientAadhaar(optional(request.patientAadhaar()));
+        registration.setPatientGender(request.patientGender());
+        registration.setPatientEmail(optional(request.patientEmail()));
+        registration.setPatientDateOfBirth(request.patientDateOfBirth());
+        registration.setPatientAge(deriveAge(request.patientDateOfBirth(), request.patientAge()));
+        registration.setPatientAddress(optional(request.patientAddress()));
+        registration.setBranch(branch); registration.setRegistrationDatetime(registeredAt);
         registration.setReferringDoctor(doctor); registration.setReferringLab(lab);
-        snapshots(registration, patient, branch, doctor, lab);
+        snapshots(registration, branch, doctor, lab);
 
         BigDecimal billAmount=Money.ZERO;
         int displayOrder=1;
@@ -110,9 +115,9 @@ public class RegistrationService {
     public BillResponse bill(String registrationNo) { return mapper.bill(require(registrationNo)); }
 
     @Transactional(readOnly=true)
-    public PageResponse<RegistrationSearchRow> search(String registrationNo,String billNo,String patientId,String patientName,
+    public PageResponse<RegistrationSearchRow> search(String registrationNo,String billNo,String patientName,
             String mobile,Long branchId,LocalDate fromDate,LocalDate toDate,int page,int size) {
-        return searchRepository.search(registrationNo,billNo,patientId,patientName,mobile,branchId,fromDate,toDate,page,size);
+        return searchRepository.search(registrationNo,billNo,patientName,mobile,branchId,fromDate,toDate,page,size);
     }
 
     public RegistrationTestResponse updateTestStatus(String registrationNo,String testCode,TestStatusUpdateRequest request) {
@@ -145,31 +150,6 @@ public class RegistrationService {
         registrations.saveAndFlush(registration);
     }
 
-    private Patient resolvePatient(RegistrationPatientRequest request,Instant visitTime) {
-        if(request.patientId()!=null&&!request.patientId().isBlank()) {
-            Patient patient=patients.findByPatientIdAndActiveTrue(normalizeId(request.patientId()))
-                    .orElseThrow(()->new ResourceNotFoundException("Patient not found: "+request.patientId()));
-            if(request.updateExisting()) applyPatient(patient,request,false);
-            return patient;
-        }
-        String first=request.firstName().trim(); String mobile=request.mobile().trim();
-        if(patients.existsByFirstNameAndMobile(first,mobile)) throw new BusinessConflictException("A patient with the same first name and mobile number already exists");
-        Patient patient=new Patient(); patient.setPatientId(format("P-",patients.getNextPatientNumber()));
-        patient.setReferredBy(ReferredBy.SELF);patient.setDoctorName(null);patient.setConsultationFee(Money.ZERO);
-        patient.setRegistrationDate(visitTime);patient.setActive(true);applyPatient(patient,request,true);
-        return patients.saveAndFlush(patient);
-    }
-
-    private void applyPatient(Patient patient,RegistrationPatientRequest r,boolean creating) {
-        String first=r.firstName().trim();String mobile=r.mobile().trim();
-        if(!creating&&patients.existsByFirstNameAndMobileAndPatientIdNot(first,mobile,patient.getPatientId()))
-            throw new BusinessConflictException("Another patient with the same first name and mobile number already exists");
-        patient.setTitle(optional(r.title()));patient.setFirstName(first);patient.setLastName(optional(r.lastName()));
-        patient.setGender(r.gender());patient.setMobile(mobile);patient.setAddress(optional(r.address()));patient.setEmail(optional(r.email()));
-        patient.setDateOfBirth(r.dateOfBirth());patient.setAge(deriveAge(r.dateOfBirth(),r.age()));
-        if(creating||r.aadhaarNo()!=null)patient.setAadhaarNo(optional(r.aadhaarNo()));
-    }
-
     private short deriveAge(LocalDate dob,Short supplied) {
         if(dob==null)return supplied;
         LocalDate today=LocalDate.now(clock);if(dob.isAfter(today))throw new BusinessValidationException("Date of birth cannot be in the future");
@@ -177,10 +157,8 @@ public class RegistrationService {
         return (short)age;
     }
 
-    private void snapshots(Registration r,Patient p,Branch b,ReferralSource doctor,ReferralSource lab) {
-        r.setPatientTitleSnapshot(p.getTitle());r.setPatientNameSnapshot((p.getFirstName()+" "+Optional.ofNullable(p.getLastName()).orElse("")).trim());
-        r.setPatientAgeSnapshot(p.getAge());r.setPatientGenderSnapshot(p.getGender());r.setPatientMobileSnapshot(p.getMobile());
-        r.setPatientAddressSnapshot(p.getAddress());r.setBranchCodeSnapshot(b.getBranchCode());r.setBranchNameSnapshot(b.getBranchName());
+    private void snapshots(Registration r,Branch b,ReferralSource doctor,ReferralSource lab) {
+        r.setBranchCodeSnapshot(b.getBranchCode());r.setBranchNameSnapshot(b.getBranchName());
         r.setBranchAddressSnapshot(b.getAddress());r.setBranchPhoneSnapshot(b.getPhone());r.setBranchMobileSnapshot(b.getMobile());
         if(doctor!=null){r.setReferringDoctorNameSnapshot(doctor.getName());r.setReferringDoctorQualificationSnapshot(doctor.getQualification());}
         if(lab!=null)r.setReferringLabNameSnapshot(lab.getName());

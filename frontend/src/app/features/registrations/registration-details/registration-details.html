@@ -11,7 +11,7 @@
     </section>
 
     <div class="detail-columns">
-      <section class="ops-section"><div class="ops-section-title"><h2>Patient</h2></div><dl class="detail-list"><div><dt>Patient ID</dt><dd>{{ item.patientId }}</dd></div><div><dt>Name</dt><dd>{{ item.patientTitle }} {{ item.patientName }}</dd></div><div><dt>Age / Gender</dt><dd>{{ item.patientAge }} / {{ item.patientGender }}</dd></div><div><dt>Mobile</dt><dd>{{ item.patientMobile }}</dd></div><div><dt>Address</dt><dd>{{ item.patientAddress || '--' }}</dd></div></dl></section>
+      <section class="ops-section"><div class="ops-section-title"><h2>Person Details</h2></div><dl class="detail-list"><div><dt>Name</dt><dd>{{ item.patientTitle }} {{ item.patientName }}</dd></div><div><dt>Age / Gender</dt><dd>{{ item.patientAge }} / {{ item.patientGender }}</dd></div><div><dt>Mobile</dt><dd>{{ item.patientMobile }}</dd></div><div><dt>Email</dt><dd>{{ item.patientEmail || '--' }}</dd></div><div><dt>Date of Birth</dt><dd>{{ item.patientDateOfBirth ? (item.patientDateOfBirth | date:'dd MMM yyyy') : '--' }}</dd></div><div><dt>Address</dt><dd>{{ item.patientAddress || '--' }}</dd></div></dl></section>
       <section class="ops-section"><div class="ops-section-title"><h2>Visit</h2></div><dl class="detail-list"><div><dt>Branch</dt><dd>{{ item.branchCode }} - {{ item.branchName }}</dd></div><div><dt>Doctor</dt><dd>{{ item.referringDoctorName || 'Self / None' }}<span>{{ item.referringDoctorQualification }}</span></dd></div><div><dt>Lab</dt><dd>{{ item.referringLabName || '--' }}</dd></div><div><dt>Remarks</dt><dd>{{ item.remarks || '--' }}</dd></div></dl></section>
     </div>
 

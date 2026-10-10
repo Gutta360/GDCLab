@@ -1,7 +1,5 @@
 :host { display: block; }
 
-.patient-search-block { max-width: 760px; margin-bottom: 16px; }
-.selected-patient-banner { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 16px; padding: 11px 13px; border-left: 3px solid #047857; background: #ecfdf3; color: #05603a; }
 .test-picker { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 10px; }
 .test-options { max-height: 250px; margin-bottom: 16px; overflow-y: auto; border: 1px solid #dfe3e8; border-radius: 6px; background: #fff; }
 .test-option { width: 100%; display: flex; justify-content: space-between; gap: 16px; padding: 10px 12px; border: 0; border-bottom: 1px solid #eaecf0; background: #fff; color: #101828; text-align: left; cursor: pointer; }
@@ -24,5 +22,5 @@
 
 @media (max-width: 650px) {
   .test-picker { grid-template-columns: 1fr; }
-  .test-option, .selected-patient-banner { flex-direction: column; }
+  .test-option { flex-direction: column; }
 }

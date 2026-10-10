@@ -1,9 +1,5 @@
-# GDCLab Docs
+# GDCLab Documentation
 
-GDCLab is the Patient-module-only lab application cloned from GDC2.0. See the root README for local run, schema, Nginx, Docker, and deployment instructions.
+GDCLab supports diagnostic Registration, Registration Tests and Payments. Person details are stored directly on each Registration and are used by registration search, test reporting, payment reporting and bill generation.
 
-The diagnostic database foundation is documented in
-[Phase 2](../database/PHASE2.md), including the exact V2 migration, separate
-Doctor/Lab referrals, constraints, reporting indexes, sequences, all 41 Test
-Master seeds and database verification. Diagnostic APIs and screens are
-reserved for later approved phases.
+The clean Flyway foundation, constraints, indexes, seed catalogue and verification commands are documented in [Database Foundation](../database/PHASE2.md).

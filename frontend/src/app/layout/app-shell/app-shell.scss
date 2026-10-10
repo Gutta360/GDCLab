@@ -151,7 +151,7 @@
 
 
 /* =========================
-   Patient Dropdown Container
+   Navigation Dropdown Container
    ========================= */
 
 .nav-dropdown {
@@ -163,7 +163,7 @@
 
 
 /* =========================
-   Patient Dropdown Menu
+   Navigation Dropdown Menu
    ========================= */
 
 .dropdown-menu {
@@ -172,13 +172,13 @@
   top: 100%;
 
   /*
-   * Patient text begins 12px inside its nav-item.
+   * Parent navigation text begins 12px inside its nav-item.
    * Dropdown items have 20px left padding.
    *
    * 12px - 20px = -8px
    *
    * This keeps the submenu text vertically aligned
-   * with the "Patient" text above.
+   * with the parent navigation text above.
    */
   left: -8px;
 

@@ -12,7 +12,7 @@
 	<artifactId>gdclab-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>GDCLab Backend</name>
-	<description>Lightweight GDCLab backend with the Patient module enabled</description>
+	<description>GDCLab diagnostic registration, testing, billing and payments backend</description>
 	<url/>
 	<licenses>
 		<license/>

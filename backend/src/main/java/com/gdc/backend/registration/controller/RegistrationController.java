@@ -25,11 +25,11 @@ public class RegistrationController {
             @Valid @RequestBody TestStatusUpdateRequest request){return service.updateTestStatus(registrationNo,testCode,request);}
     @GetMapping public PageResponse<RegistrationSearchRow> search(
             @RequestParam(required=false)String registrationNo,@RequestParam(required=false)String billNo,
-            @RequestParam(required=false)String patientId,@RequestParam(required=false)String patientName,
+            @RequestParam(required=false)String patientName,
             @RequestParam(required=false)String mobile,@RequestParam(required=false)Long branchId,
             @RequestParam(required=false)@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)LocalDate fromDate,
             @RequestParam(required=false)@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)LocalDate toDate,
             @RequestParam(defaultValue="0")int page,@RequestParam(defaultValue="25")int size){
-        return service.search(registrationNo,billNo,patientId,patientName,mobile,branchId,fromDate,toDate,page,size);
+        return service.search(registrationNo,billNo,patientName,mobile,branchId,fromDate,toDate,page,size);
     }
 }

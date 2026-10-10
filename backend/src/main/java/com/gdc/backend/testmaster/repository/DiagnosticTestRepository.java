@@ -13,12 +13,13 @@ public interface DiagnosticTestRepository extends JpaRepository<DiagnosticTest, 
 
     @Query("""
             SELECT t FROM DiagnosticTest t JOIN FETCH t.category c
-            WHERE (:active IS NULL OR t.active = :active)
-              AND (:category IS NULL OR UPPER(c.categoryCode) = UPPER(:category))
-              AND (:query IS NULL OR LOWER(t.testCode) LIKE LOWER(CONCAT('%', :query, '%'))
+            WHERE (:filterByActive = false OR t.active = :active)
+              AND (:category = '' OR UPPER(c.categoryCode) = UPPER(:category))
+              AND (:query = '' OR LOWER(t.testCode) LIKE LOWER(CONCAT('%', :query, '%'))
                    OR LOWER(t.testName) LIKE LOWER(CONCAT('%', :query, '%')))
             ORDER BY c.displayOrder, t.displayOrder, t.id
             """)
     List<DiagnosticTest> search(@Param("query") String query, @Param("category") String category,
-                                @Param("active") Boolean active);
+                                @Param("active") boolean active,
+                                @Param("filterByActive") boolean filterByActive);
 }

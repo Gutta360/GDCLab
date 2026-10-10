@@ -24,18 +24,47 @@ describe('NewRegistration', () => {
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(NewRegistration);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+  });
 
+  async function loadMasters(failTests = false): Promise<void> {
+    fixture.detectChanges();
     http.expectOne('api/v1/branches').flush([{ id: 1, branchCode: 'MAIN', branchName: 'Main', address: 'Address', phone: null, mobile: null }]);
     http.expectOne(request => request.url === 'api/v1/referral-sources' && request.params.get('type') === 'DOCTOR').flush([]);
     http.expectOne(request => request.url === 'api/v1/referral-sources' && request.params.get('type') === 'LAB').flush([]);
-    http.expectOne(request => request.url === 'api/v1/tests' && request.params.get('active') === 'true').flush([test]);
+    const testsRequest = http.expectOne(request => request.url === 'api/v1/tests' && request.params.get('active') === 'true');
+    if (failTests) {
+      testsRequest.flush({ message: 'Query failed' }, { status: 500, statusText: 'Server Error' });
+    } else {
+      testsRequest.flush([test]);
+    }
     await fixture.whenStable();
-  });
+    fixture.detectChanges();
+  }
 
   afterEach(() => http.verify());
 
-  it('prevents duplicate test selection and calculates discounts', () => {
+  it('renders branches and tests from reference data', async () => {
+    await loadMasters();
+
+    const branchOptions = Array.from(fixture.nativeElement.querySelectorAll('#branchId option')) as HTMLOptionElement[];
+    expect(branchOptions.map(option => option.textContent?.trim())).toContain('MAIN - Main');
+    expect(component.form.value.branchId).toBe('1');
+    expect(fixture.nativeElement.querySelector('.test-option')?.textContent).toContain('TST-00001');
+    expect(component.categories).toEqual([{ code: 'CT_SCAN', name: 'CT Scan' }]);
+  });
+
+  it('keeps successful branch data when the test request fails', async () => {
+    await loadMasters(true);
+
+    expect(component.branches).toHaveLength(1);
+    expect(component.form.value.branchId).toBe('1');
+    expect(component.tests).toEqual([]);
+    expect(component.notificationError).toBe(true);
+    expect(component.notification).toBe('Query failed');
+  });
+
+  it('prevents duplicate test selection and calculates discounts', async () => {
+    await loadMasters();
     component.addTest(test);
     component.addTest(test);
     expect(component.selectedTests).toHaveLength(1);
@@ -47,17 +76,20 @@ describe('NewRegistration', () => {
     expect(component.finalBillAmount).toBe(855);
   });
 
-  it('reuses a selected patient instead of creating a new identity', () => {
-    component.selectPatient({ patientId: 'P-00001', firstName: 'Existing', lastName: 'Patient', fullName: 'Existing Patient', mobile: '9999999999' });
-    http.expectOne('api/v1/patients/P-00001').flush({
-      patientId: 'P-00001', title: 'Mrs', firstName: 'Existing', lastName: 'Patient', fullName: 'Existing Patient',
-      gender: 'FEMALE', age: 30, mobile: '9999999999', address: null, aadhaarMasked: 'XXXXXXXX1234',
-      email: null, dateOfBirth: null, referredBy: 'SELF', doctorName: null, consultationFee: 0,
-      registrationDate: '2026-10-07T10:00:00Z', active: true, createdAt: '2026-10-07T10:00:00Z',
-      updatedAt: '2026-10-07T10:00:00Z', version: 0
+  it('submits person details directly on the registration', async () => {
+    await loadMasters();
+    component.form.patchValue({
+      patientName: 'Keerthi', mobile: '9999999999', aadhaarNo: '123456789012',
+      gender: 'FEMALE', age: '30'
     });
-    expect(component.patientMode).toBe('existing');
-    expect(component.selectedPatient?.patientId).toBe('P-00001');
-    expect(component.form.value.aadhaarNo).toBe('');
+    component.addTest(test);
+    component.save();
+
+    const request = http.expectOne('api/v1/registrations');
+    expect(request.request.body.patientName).toBe('Keerthi');
+    expect(request.request.body.patientMobile).toBe('9999999999');
+    expect(request.request.body.patientAadhaar).toBe('123456789012');
+    expect(request.request.body.patient).toBeUndefined();
+    request.flush({ registrationNo: 'REG-00001' });
   });
 });

@@ -1,5 +1,4 @@
-import { Gender } from '../../patients/models/patient.model';
-
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
 export type ReferralType = 'DOCTOR' | 'LAB' | 'SELF' | 'OTHER';
 export type PaymentMode = 'CASH' | 'UPI' | 'CARD' | 'OTHER';
 export type RegistrationStatus = 'OPEN' | 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';
@@ -71,28 +70,21 @@ export interface PaymentResponse {
   receivedBy: string | null;
 }
 
-export interface RegistrationPatientRequest {
-  patientId: string | null;
-  updateExisting: boolean;
-  title: string | null;
-  firstName: string;
-  lastName: string | null;
-  gender: Gender;
-  age: number;
-  mobile: string;
-  address: string | null;
-  email: string | null;
-  dateOfBirth: string | null;
-  aadhaarNo: string | null;
-}
-
 export interface RegistrationTestRequest {
   testCode: string;
   discountPercentage: number;
 }
 
 export interface RegistrationCreateRequest {
-  patient: RegistrationPatientRequest;
+  patientTitle: string | null;
+  patientName: string;
+  patientMobile: string;
+  patientAadhaar: string | null;
+  patientGender: Gender;
+  patientEmail: string | null;
+  patientDateOfBirth: string | null;
+  patientAge: number;
+  patientAddress: string | null;
   branchId: number;
   referringDoctorId: number | null;
   referringLabId: number | null;
@@ -123,12 +115,13 @@ export interface RegistrationResponse {
   registrationNo: string;
   billNo: string;
   registrationDatetime: string;
-  patientId: string;
   patientTitle: string | null;
   patientName: string;
   patientAge: number;
   patientGender: Gender;
   patientMobile: string;
+  patientEmail: string | null;
+  patientDateOfBirth: string | null;
   patientAddress: string | null;
   branchId: number;
   branchCode: string;
@@ -155,7 +148,6 @@ export interface RegistrationSearchRow {
   registrationNo: string;
   billNo: string;
   registrationDatetime: string;
-  patientId: string;
   patientName: string;
   mobile: string;
   testCount: number;
@@ -170,7 +162,6 @@ export interface RegistrationSearchRow {
 export interface RegistrationSearchFilters {
   registrationNo?: string;
   billNo?: string;
-  patientId?: string;
   patientName?: string;
   mobile?: string;
   branchId?: number;

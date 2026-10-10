@@ -1,6 +1,6 @@
 package com.gdc.backend.registration.dto;
 
-import com.gdc.backend.patient.entity.Gender;
+import com.gdc.backend.registration.entity.Gender;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
